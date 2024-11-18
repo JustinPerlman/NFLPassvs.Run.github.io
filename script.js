@@ -7,14 +7,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function loadCSVData(filePath) {
     d3.csv(filePath).then(function(data) {
-        /* data.forEach(function(d) {
+        data.forEach(function(d) {
             // Loop through each key in the data and convert numerical values
             for (let key in d) {
                 if (!isNaN(d[key]) && d[key] !== '') {
                     d[key] = parseFloat(d[key]); // Convert to float if it's a number
                 }
             }
-        }); */
+        });
 
         globalData = data;
         console.log("Parsed CSV Data Header:", globalData.slice(0, 3));
