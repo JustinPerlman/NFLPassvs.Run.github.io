@@ -115,7 +115,7 @@ function createVis1() {
 	svg.append("text")
 		.attr("transform", `translate(${width / 2}, ${height + margin.top + 20})`)
 		.style("text-anchor", "middle")
-		.text("Team");
+		.text("Team (orange = rush, blue = pass)");
 
 	// Add y-axis label
 	svg.append("text")
