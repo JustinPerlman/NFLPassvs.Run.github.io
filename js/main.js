@@ -4,6 +4,7 @@ import { SituationalSuccessVis } from './visualizations/situationalSuccess.js';
 import { ScoringSituationVis } from './visualizations/scoringSituation.js';
 import { PlayOutcomeVis } from './visualizations/playOutcome.js';
 import { GameSituationVis } from './visualizations/gameSituation.js';
+import { GameContextVis } from './visualizations/gameContext.js';
 
 class App {
     constructor() {
@@ -25,7 +26,9 @@ class App {
                 yards_gained: +d.yards_gained,
                 down: +d.down,
                 yards_to_go: +d.yards_to_go,
-                score_differential: +d.score_differential
+                score_differential: +d.score_differential,
+                yardline_100: +d.yardline_100,
+                qtr: +d.qtr
             }));
         } catch (error) {
             console.error('Error loading data:', error);
@@ -39,12 +42,21 @@ class App {
             situationalSuccess: new SituationalSuccessVis(),
             scoringSituation: new ScoringSituationVis(),
             playOutcome: new PlayOutcomeVis(),
-            gameSituation: new GameSituationVis()
+            gameSituation: new GameSituationVis(),
+            gameContext: new GameContextVis()
         };
 
         // Create each visualization with the data
-        for (const vis of Object.values(this.visualizations)) {
-            await vis.create(this.data);
+        for (const [name, vis] of Object.entries(this.visualizations)) {
+            try {
+                if (name === 'gameContext') {
+                    await vis.initialize();
+                } else {
+                    await vis.create(this.data);
+                }
+            } catch (error) {
+                console.error(`Error initializing ${name} visualization:`, error);
+            }
         }
     }
 }

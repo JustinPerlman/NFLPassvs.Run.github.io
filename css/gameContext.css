@@ -1,0 +1,239 @@
+.visualization-container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    height: 600px;
+}
+
+.controls-panel {
+    flex: 0 0 250px;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.main-visualization {
+    flex: 1.5;
+    position: relative;
+    min-width: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+}
+
+.side-panel {
+    flex: 0 0 250px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+}
+
+#fieldPositionChart, #scoreContextChart {
+    width: 100%;
+    height: 500px;
+    background: white;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.filter-group {
+    margin-bottom: 15px;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #013369;
+}
+
+.filter-group h3 {
+    margin: 0 0 15px 0;
+    color: #013369;
+}
+
+.down-filter {
+    margin-bottom: 15px;
+}
+
+.down-buttons {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.down-button {
+    padding: 5px 15px;
+    border: 1px solid #013369;
+    background: white;
+    color: #013369;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.down-button:hover {
+    background: #f0f0f0;
+}
+
+.down-button.active {
+    background: #013369;
+    color: white;
+}
+
+.score-filter, .quarter-filter {
+    margin-bottom: 15px;
+}
+
+.button-group {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-control:focus {
+    border-color: #013369;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(1, 51, 105, 0.2);
+}
+
+.team-selector {
+    margin-top: 30px;
+}
+
+.team-select {
+    margin-bottom: 10px;
+}
+
+select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+.yards-to-go-filter {
+    margin: 0 0 20px 0;
+}
+
+.slider-container {
+    width: 100%;
+    padding: 0 10px;
+    margin: 10px 0;
+    height: 5px;
+}
+
+.field-markers {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 40px;
+    margin-top: 10px;
+}
+
+.marker {
+    color: #666;
+    font-size: 0.9em;
+}
+
+/* noUiSlider customization */
+.noUi-target {
+    background: #013369;
+    border: none;
+    box-shadow: none;
+}
+
+.noUi-connects {
+    background: #013369;
+}
+
+.noUi-connect {
+    background: #013369;
+}
+
+.noUi-horizontal {
+    height: 5px;
+}
+
+.noUi-horizontal .noUi-handle {
+    width: 15px;
+    height: 15px;
+    right: -7px;
+    top: -5px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid #013369;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.noUi-handle:before,
+.noUi-handle:after {
+    display: none;
+}
+
+/* Add hover effect for handles */
+.noUi-horizontal .noUi-handle:hover {
+    background: #f8f8f8;
+}
+
+/* Active state for handles */
+.noUi-horizontal .noUi-handle.noUi-active {
+    transform: scale(1.1);
+    transition: transform 0.2s;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    padding: 0 5px;
+    font-size: 12px;
+    color: #666;
+}
+
+#ydsToGoValue {
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+/* Chart specific styles */
+.x-axis line, .y-axis line {
+    stroke: #ddd;
+}
+
+.x-axis path, .y-axis path {
+    stroke: #999;
+}
+
+.x-axis text, .y-axis text {
+    fill: #666;
+}
+
+.grid-lines line {
+    stroke: #eee;
+    stroke-dasharray: 2,2;
+}
+
+.chart-title {
+    font-size: 1.1em;
+    fill: #013369;
+}
+
+.section-description {
+    max-width: 800px;
+    margin: 0 auto 2rem auto;
+    text-align: center;
+    color: #666;
+    line-height: 1.6;
+}

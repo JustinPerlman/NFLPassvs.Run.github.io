@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NFL Play Analysis</title>
+    <link rel="stylesheet" href="css/gameContext.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -16,6 +19,7 @@
             <li><a href="#scoring" data-section="scoring"></a></li>
             <li><a href="#outcome" data-section="outcome"></a></li>
             <li><a href="#situation" data-section="situation"></a></li>
+            <li><a href="#gameContext" data-section="gameContext"></a></li>
         </ul>
     </nav>
 
@@ -95,6 +99,73 @@
                     and play selection.
                 </p>
                 <div id="situationChart" class="chart"></div>
+            </div>
+        </section>
+
+        <section id="gameContext" class="section">
+            <div class="content">
+                <h2>Game Context Matters</h2>
+                <p class="section-description">
+                    The decision to run or pass isn't made in isolation. Field position and game situation 
+                    all play crucial roles in determining play selection. Explore how teams adapt their strategy 
+                    based on these factors.
+                </p>
+                <div class="visualization-container">
+                    <div class="controls-panel">
+                        <div class="filter-group">
+                            <h3>Game Situation</h3>
+                            <div class="down-filter">
+                                <label>Down:</label>
+                                <div class="down-buttons">
+                                    <button class="down-button" data-down="">All</button>
+                                    <button class="down-button" data-down="1">1st</button>
+                                    <button class="down-button" data-down="2">2nd</button>
+                                    <button class="down-button" data-down="3">3rd</button>
+                                    <button class="down-button" data-down="4">4th</button>
+                                </div>
+                            </div>
+                            <div class="yards-to-go-filter">
+                                <label>Yards to Go: <span id="ydsToGoValue">1 - 20+ yards</span></label>
+                                <div id="ydsToGoSlider" class="slider-container"></div>
+                                <div class="slider-labels">
+                                    <span>1</span>
+                                    <span>5</span>
+                                    <span>10</span>
+                                    <span>15</span>
+                                    <span>20+</span>
+                                </div>
+                            </div>
+                            <div class="quarter-filter">
+                                <label>Quarter:</label>
+                                <select id="quarterSelect" class="form-control">
+                                    <option value="">All Quarters</option>
+                                    <option value="1">1st Quarter</option>
+                                    <option value="2">2nd Quarter</option>
+                                    <option value="3">3rd Quarter</option>
+                                    <option value="4">4th Quarter</option>
+                                </select>
+                            </div>
+                            <div class="score-filter">
+                                <label>Score Differential:</label>
+                                <select id="scoreDiff">
+                                    <option value="all">All Situations</option>
+                                    <option value="leading">Leading by 7+</option>
+                                    <option value="close">Within 7 Points</option>
+                                    <option value="trailing">Trailing by 7+</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label for="teamSelect">Select Team:</label>
+                            <select id="teamSelect" class="form-control">
+                                <option value="">All Teams</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="main-visualization">
+                        <div id="fieldPositionChart"></div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
