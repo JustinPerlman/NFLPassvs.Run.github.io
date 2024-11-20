@@ -14,7 +14,7 @@ export class ScoringSituationVis {
         const playsByScoreDiff = d3.rollup(data,
             v => ({
                 pass: v.filter(d => d.play_type === 'pass').length,
-                rush: v.filter(d => d.play_type === 'rush').length,
+                run: v.filter(d => d.play_type === 'run').length,
                 total: v.length
             }),
             d => Math.min(Math.max(d.score_differential, -21), 21)
@@ -25,6 +25,9 @@ export class ScoringSituationVis {
     }
 
     createBaseSVG(selector) {
+        // Clear any existing SVG first
+        d3.select(selector).selectAll('*').remove();
+        
         return d3.select(selector)
             .append('svg')
             .attr('width', this.width + this.margin.left + this.margin.right)
@@ -34,12 +37,15 @@ export class ScoringSituationVis {
     }
 
     createLineChart(svg, data) {
-        // Convert data to array format
-        const chartData = Array.from(data, ([diff, counts]) => ({
-            scoreDiff: +diff,
-            passPercentage: (counts.pass / counts.total) * 100,
-            rushPercentage: (counts.rush / counts.total) * 100
-        })).sort((a, b) => a.scoreDiff - b.scoreDiff);
+        // Convert data to array format and ensure valid numbers
+        const chartData = Array.from(data, ([diff, counts]) => {
+            const total = counts.total || 1; // Prevent division by zero
+            return {
+                scoreDiff: +diff,
+                passPercentage: (counts.pass / total) * 100,
+                runPercentage: (counts.run / total) * 100
+            };
+        }).sort((a, b) => a.scoreDiff - b.scoreDiff);
 
         // Create scales
         const x = d3.scaleLinear()
@@ -54,12 +60,14 @@ export class ScoringSituationVis {
         const passLine = d3.line()
             .x(d => x(d.scoreDiff))
             .y(d => y(d.passPercentage))
-            .curve(d3.curveCatmullRom);
+            .curve(d3.curveCatmullRom)
+            .defined(d => !isNaN(d.passPercentage)); // Skip NaN values
 
-        const rushLine = d3.line()
+        const runLine = d3.line()
             .x(d => x(d.scoreDiff))
-            .y(d => y(d.rushPercentage))
-            .curve(d3.curveCatmullRom);
+            .y(d => y(d.runPercentage))
+            .curve(d3.curveCatmullRom)
+            .defined(d => !isNaN(d.runPercentage)); // Skip NaN values
 
         // Add lines
         svg.append('path')
@@ -72,8 +80,8 @@ export class ScoringSituationVis {
 
         svg.append('path')
             .datum(chartData)
-            .attr('class', 'line rush')
-            .attr('d', rushLine)
+            .attr('class', 'line run')
+            .attr('d', runLine)
             .style('fill', 'none')
             .style('stroke', this.colors.accent)
             .style('stroke-width', 2);
@@ -87,64 +95,55 @@ export class ScoringSituationVis {
             .call(d3.axisLeft(y).tickFormat(d => d + '%'));
 
         // Add labels
-        this.createLabels(svg, 'Score Differential', 'Play Type Percentage');
-
-        // Add legend
-        this.createLegend(svg);
-
-        // Add interactivity
-        this.addInteractivity(svg, chartData, x, y);
-    }
-
-    createLabels(svg, xLabel, yLabel) {
         svg.append('text')
             .attr('x', this.width / 2)
-            .attr('y', this.height + this.margin.bottom - 10)
+            .attr('y', this.height + 40)
             .attr('text-anchor', 'middle')
-            .text(xLabel)
-            .style('fill', this.colors.primary);
+            .style('fill', this.colors.primary)
+            .text('Score Differential');
 
         svg.append('text')
             .attr('transform', 'rotate(-90)')
             .attr('x', -this.height / 2)
-            .attr('y', -this.margin.left + 20)
+            .attr('y', -40)
             .attr('text-anchor', 'middle')
-            .text(yLabel)
-            .style('fill', this.colors.primary);
-    }
+            .style('fill', this.colors.primary)
+            .text('Play Type Percentage');
 
-    createLegend(svg) {
+        // Add legend
         const legend = svg.append('g')
             .attr('class', 'legend')
-            .attr('transform', `translate(${this.width - 100}, 20)`);
+            .attr('transform', `translate(${this.width - 100}, 0)`);
 
-        // Pass plays
+        // Pass plays legend item
         legend.append('line')
             .attr('x1', 0)
+            .attr('y1', 0)
             .attr('x2', 20)
-            .attr('y1', 10)
-            .attr('y2', 10)
+            .attr('y2', 0)
             .style('stroke', this.colors.primary)
             .style('stroke-width', 2);
 
         legend.append('text')
-            .attr('x', 30)
-            .attr('y', 15)
-            .text('Pass Plays');
+            .attr('x', 25)
+            .attr('y', 4)
+            .text('Pass Plays')
+            .style('font-size', '12px');
 
-        // Rush plays
+        // Run plays legend item
         legend.append('line')
             .attr('x1', 0)
+            .attr('y1', 20)
             .attr('x2', 20)
-            .attr('y1', 40)
-            .attr('y2', 40)
+            .attr('y2', 20)
             .style('stroke', this.colors.accent)
             .style('stroke-width', 2);
 
         legend.append('text')
-            .attr('x', 30)
-            .attr('y', 45)
-            .text('Rush Plays');
+            .attr('x', 25)
+            .attr('y', 24)
+            .text('Run Plays')
+            .style('font-size', '12px');
     }
 
     addInteractivity(svg, data, x, y) {
@@ -178,7 +177,7 @@ export class ScoringSituationVis {
                     // Show tooltip
                     this.showTooltip(event, `Score Differential: ${scoreDiff > 0 ? '+' : ''}${scoreDiff}
                         Pass Plays: ${dataPoint.passPercentage.toFixed(1)}%
-                        Rush Plays: ${dataPoint.rushPercentage.toFixed(1)}%`);
+                        Run Plays: ${dataPoint.runPercentage.toFixed(1)}%`);
                 }
             })
             .on('mouseout', () => {
