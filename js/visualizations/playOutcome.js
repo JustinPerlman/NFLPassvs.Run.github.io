@@ -26,6 +26,9 @@ export class PlayOutcomeVis {
     }
 
     createBaseSVG(selector) {
+        // Clear any existing SVG
+        d3.select(selector).selectAll('*').remove();
+        
         return d3.select(selector)
             .append('svg')
             .attr('width', this.width + this.margin.left + this.margin.right)
@@ -35,6 +38,17 @@ export class PlayOutcomeVis {
     }
 
     createDensityPlot(svg, passPlays, rushPlays, minYards, maxYards) {
+        // Check if we have data
+        if (passPlays.length === 0 || rushPlays.length === 0) {
+            svg.append('text')
+                .attr('x', this.width / 2)
+                .attr('y', this.height / 2)
+                .attr('text-anchor', 'middle')
+                .text('No data available for selected filters')
+                .style('fill', this.colors.primary);
+            return;
+        }
+
         // Create scales
         const x = d3.scaleLinear()
             .domain([minYards, maxYards])

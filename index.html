@@ -22,12 +22,8 @@
     <main>
         <section id="intro" class="section active">
             <div class="content">
-                <h1>NFL Play Analysis: Rushing vs Passing</h1>
-                <p class="intro-text">
-                    Explore the strategic dynamics of NFL play-calling through five interactive visualizations. 
-                    This analysis reveals how teams balance between passing and rushing plays across different 
-                    game situations, field positions, and scoring scenarios.
-                </p>
+                <h1>NFL Play Analysis</h1>
+                <p>Explore NFL play-calling patterns and their effectiveness across different game situations.</p>
                 <div class="scroll-hint">
                     <p>Scroll to explore</p>
                     <div class="arrow"></div>
@@ -37,22 +33,19 @@
 
         <section id="distribution" class="section">
             <div class="content">
-                <h2>Play Distribution</h2>
-                <p class="description">
-                    This visualization shows the basic distribution of play types across the NFL. 
-                    Compare the frequency of passing versus rushing plays to understand teams' 
-                    overall offensive strategies. Use the filters to explore how these patterns 
-                    vary by team and year.
-                </p>
-                <div class="filters">
-                    <select id="yearFilter">
-                        <option value="all">All Years</option>
-                    </select>
-                    <select id="teamFilter">
-                        <option value="all">All Teams</option>
-                    </select>
+                <h2>Team Performance Analysis</h2>
+                <p>Analyze how each team performs in rushing and passing plays, both in terms of average yards per play and total yards gained.</p>
+                
+                <div class="visualization-container">
+                    <div class="chart-container">
+                        <div id="playTypeChart"></div>
+                        <p class="chart-description">Average yards gained per play type for each team.</p>
+                    </div>
+                    <div class="chart-container">
+                        <div id="scatterChart"></div>
+                        <p class="chart-description">Total rushing vs passing yards for each team.</p>
+                    </div>
                 </div>
-                <div id="playTypeChart" class="chart"></div>
             </div>
         </section>
 

@@ -20,11 +20,14 @@ export class SituationalSuccessVis {
             d => d.play_type
         );
 
-        const svg = this.createBaseSVG('#situationalChart');
+        const svg = this.createBaseSVG('#yardsChart');
         this.createGroupedBarChart(svg, successByDown);
     }
 
     createBaseSVG(selector) {
+        // Clear any existing SVG
+        d3.select(selector).selectAll('*').remove();
+        
         return d3.select(selector)
             .append('svg')
             .attr('width', this.width + this.margin.left + this.margin.right)
@@ -34,6 +37,17 @@ export class SituationalSuccessVis {
     }
 
     createGroupedBarChart(svg, data) {
+        // Check if we have data
+        if (!data || data.size === 0) {
+            svg.append('text')
+                .attr('x', this.width / 2)
+                .attr('y', this.height / 2)
+                .attr('text-anchor', 'middle')
+                .text('No data available for selected filters')
+                .style('fill', this.colors.primary);
+            return;
+        }
+
         const downs = Array.from(data.keys()).sort();
         const playTypes = Array.from(data.get(downs[0]).keys());
 
