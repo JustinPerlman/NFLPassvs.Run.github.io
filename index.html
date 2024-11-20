@@ -1,69 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NFL Play Analysis</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://d3js.org/d3.v7.min.js"></script> <!-- For D3 visualizations -->
 </head>
-
 <body>
-    <header>
-    </header>
+    <nav class="dots-nav">
+        <ul>
+            <li><a href="#intro" class="active" data-section="intro"></a></li>
+            <li><a href="#distribution" data-section="distribution"></a></li>
+            <li><a href="#yards" data-section="yards"></a></li>
+            <li><a href="#scoring" data-section="scoring"></a></li>
+            <li><a href="#outcome" data-section="outcome"></a></li>
+            <li><a href="#situation" data-section="situation"></a></li>
+        </ul>
+    </nav>
 
-    <section id="overview">
-        <h1>Welcome to NFL Play Analysis</h1>
-        <p>Explore how play-calling strategies differ across different scenarios in NFL games. This site breaks down passing versus running plays, success rates, and more!</p>
-    </section>
-
-    <section id="visualizations">
-        <h2>Interactive Visualizations</h2>
-
-        <!-- Placeholder for your charts -->
-        <div id="vis-1">
-            <h3>Average Pass vs. Rush Yards by Team</h3>
-            <div class="chart-container">
-                <div id="pass-rush-chart"></div> <!-- Replace with actual chart -->
+    <main>
+        <section id="intro" class="section active">
+            <div class="content">
+                <h1>NFL Play Analysis: Rushing vs Passing</h1>
+                <p class="intro-text">
+                    Explore the strategic dynamics of NFL play-calling through five interactive visualizations. 
+                    This analysis reveals how teams balance between passing and rushing plays across different 
+                    game situations, field positions, and scoring scenarios.
+                </p>
+                <div class="scroll-hint">
+                    <p>Scroll to explore</p>
+                    <div class="arrow"></div>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div id="vis-2">
-            <h3>Situational Decision Map</h3>
-            <div class="chart-container">
-                <div id="decision-map"></div> <!-- Replace with actual chart -->
+        <section id="distribution" class="section">
+            <div class="content">
+                <h2>Play Distribution</h2>
+                <p class="description">
+                    This visualization shows the basic distribution of play types across the NFL. 
+                    Compare the frequency of passing versus rushing plays to understand teams' 
+                    overall offensive strategies. Use the filters to explore how these patterns 
+                    vary by team and year.
+                </p>
+                <div class="filters">
+                    <select id="yearFilter">
+                        <option value="all">All Years</option>
+                    </select>
+                    <select id="teamFilter">
+                        <option value="all">All Teams</option>
+                    </select>
+                </div>
+                <div id="playTypeChart" class="chart"></div>
             </div>
-        </div>
+        </section>
 
-        <div id="vis-3">
-            <h3>Success Rate of Different Play Types</h3>
-            <div class="chart-container">
-                <div id="success-rate-chart"></div> <!-- Replace with actual chart -->
+        <section id="yards" class="section">
+            <div class="content">
+                <h2>Situational Success</h2>
+                <p class="description">
+                    Analyze how teams perform on different downs. This visualization breaks down 
+                    the success rates of passing and rushing plays by down number, revealing how 
+                    teams adapt their strategies as they progress through each set of downs.
+                </p>
+                <div id="yardsChart" class="chart"></div>
             </div>
-        </div>
+        </section>
 
-        <div id="vis-4">
-            <h3>Field Position Danger Map</h3>
-            <div class="chart-container">
-                <div id="danger-map"></div> <!-- Replace with actual chart -->
+        <section id="scoring" class="section">
+            <div class="content">
+                <h2>Scoring Situation Analysis</h2>
+                <p class="description">
+                    See how the score differential influences play-calling decisions. This chart 
+                    reveals how teams adjust their pass/rush balance when leading or trailing, 
+                    highlighting strategic adaptations under different scoring pressures.
+                </p>
+                <div id="scoringChart" class="chart"></div>
             </div>
-        </div>
+        </section>
 
-        <div id="vis-5">
-            <h3>Visualization 5</h3>
-            <div class="chart-container">
-                <div id="danger-map2"></div> <!-- Replace with actual chart -->
+        <section id="outcome" class="section">
+            <div class="content">
+                <h2>Play Outcome Distribution</h2>
+                <p class="description">
+                    Examine the distribution of yards gained for both passing and rushing plays. 
+                    This density plot shows the relative frequency of different gain amounts, 
+                    helping identify which play types are more likely to result in specific yardage outcomes.
+                </p>
+                <div id="outcomeChart" class="chart"></div>
             </div>
-        </div>
+        </section>
 
-    </section>
+        <section id="situation" class="section">
+            <div class="content">
+                <h2>Game Situation Impact</h2>
+                <p class="description">
+                    Understand how game clock and field position combine to influence play-calling. 
+                    This visualization reveals how teams balance risk and reward in different game 
+                    situations, showing the relationship between time remaining, field position, 
+                    and play selection.
+                </p>
+                <div id="situationChart" class="chart"></div>
+            </div>
+        </section>
+    </main>
 
-    <footer id="contact">
-        <p>&copy; 2024 NFL Play Analysis Project | Created by Justin Perlman, Romir Varshney, Elvin Ebby, Keegan Willt</p>
-    </footer>
-
-    <script src="script.js"></script> <!-- Link to JS file -->
+    <script type="module" src="js/main.js"></script>
 </body>
-
 </html>
