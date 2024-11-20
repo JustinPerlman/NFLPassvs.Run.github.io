@@ -20,7 +20,7 @@ class App {
 
     async loadData() {
         try {
-            this.data = await d3.csv('data.csv', d => ({
+            this.data = await d3.csv('datamini.csv', d => ({
                 ...d,
                 yards_gained: +d.yards_gained,
                 down: +d.down,
