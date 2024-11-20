@@ -1,7 +1,7 @@
 export class PlayDistributionVis {
     constructor() {
-        this.margin = {top: 40, right: 40, bottom: 120, left: 60};
-        this.width = 500 - this.margin.left - this.margin.right;
+        this.margin = {top: 40, right: 150, bottom: 120, left: 60};  
+        this.width = 600 - this.margin.left - this.margin.right;
         this.height = 400 - this.margin.top - this.margin.bottom;
         this.colors = {
             primary: '#013369',
@@ -20,7 +20,7 @@ export class PlayDistributionVis {
             ...d,
             yards_gained: +d.yards_gained || 0,
             play_type: d.play_type || '',
-            team: d.posteam || ''  // Changed from team to posteam
+            team: d.posteam || ''  
         })).filter(d => d.team && d.play_type);
 
         // Add debugging
@@ -29,9 +29,9 @@ export class PlayDistributionVis {
         // Calculate team statistics
         const teamStats = Array.from(d3.rollup(cleanData,
             v => ({
-                avgRushYards: d3.mean(v.filter(d => d.play_type === 'run'), d => d.yards_gained) || 0,  // Changed from rush to run
+                avgRushYards: d3.mean(v.filter(d => d.play_type === 'run'), d => d.yards_gained) || 0,  
                 avgPassYards: d3.mean(v.filter(d => d.play_type === 'pass'), d => d.yards_gained) || 0,
-                totalRushYards: d3.sum(v.filter(d => d.play_type === 'run'), d => d.yards_gained) || 0,  // Changed from rush to run
+                totalRushYards: d3.sum(v.filter(d => d.play_type === 'run'), d => d.yards_gained) || 0,  
                 totalPassYards: d3.sum(v.filter(d => d.play_type === 'pass'), d => d.yards_gained) || 0
             }),
             d => d.team
@@ -59,10 +59,14 @@ export class PlayDistributionVis {
         // Clear existing content
         d3.select('#playTypeChart').selectAll('*').remove();
 
-        const svg = d3.select('#playTypeChart')
+        // Create main SVG container
+        const container = d3.select('#playTypeChart')
             .append('svg')
             .attr('width', this.width + this.margin.left + this.margin.right)
-            .attr('height', this.height + this.margin.top + this.margin.bottom)
+            .attr('height', this.height + this.margin.top + this.margin.bottom);
+
+        // Create chart group
+        const svg = container
             .append('g')
             .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
 
@@ -121,38 +125,38 @@ export class PlayDistributionVis {
         // Add title
         svg.append('text')
             .attr('x', this.width / 2)
-            .attr('y', -10)
+            .attr('y', -20)
             .attr('text-anchor', 'middle')
             .style('font-size', '16px')
             .style('fill', this.colors.primary)
             .text('Average Yards per Play by Team');
 
-        // Add legend
-        const legend = svg.append('g')
-            .attr('transform', `translate(${this.width - 100}, -30)`);
+        // Add legend below graph
+        svg.append('rect')
+            .attr('x', this.width / 2 - 100)
+            .attr('y', this.height + 60)
+            .attr('width', 12)
+            .attr('height', 12)
+            .attr('fill', this.colors.accent);
 
-        const legendData = [
-            {label: 'Rush', color: this.colors.accent},
-            {label: 'Pass', color: this.colors.primary}
-        ];
+        svg.append('text')
+            .attr('x', this.width / 2 - 80)
+            .attr('y', this.height + 70)
+            .style('font-size', '12px')
+            .text('Rush');
 
-        legend.selectAll('rect')
-            .data(legendData)
-            .enter()
-            .append('rect')
-            .attr('x', (d, i) => i * 50)
-            .attr('width', 15)
-            .attr('height', 15)
-            .attr('fill', d => d.color);
+        svg.append('rect')
+            .attr('x', this.width / 2 + 20)
+            .attr('y', this.height + 60)
+            .attr('width', 12)
+            .attr('height', 12)
+            .attr('fill', this.colors.primary);
 
-        legend.selectAll('text')
-            .data(legendData)
-            .enter()
-            .append('text')
-            .attr('x', (d, i) => i * 50 + 20)
-            .attr('y', 12)
-            .text(d => d.label)
-            .style('font-size', '12px');
+        svg.append('text')
+            .attr('x', this.width / 2 + 40)
+            .attr('y', this.height + 70)
+            .style('font-size', '12px')
+            .text('Pass');
     }
 
     createScatterPlot(data) {
