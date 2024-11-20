@@ -7,6 +7,12 @@ export class PlayDistributionVis {
             primary: '#013369',
             accent: '#D50A0A'
         };
+        // Add highlight colors
+        this.highlightColors = {
+            primary: '#1e56b0',
+            accent: '#ff1f1f'
+        };
+        this.selectedTeams = new Set();  // Track selected teams
     }
 
     async create(data) {
@@ -59,13 +65,11 @@ export class PlayDistributionVis {
         // Clear existing content
         d3.select('#playTypeChart').selectAll('*').remove();
 
-        // Create main SVG container
         const container = d3.select('#playTypeChart')
             .append('svg')
             .attr('width', this.width + this.margin.left + this.margin.right)
             .attr('height', this.height + this.margin.top + this.margin.bottom);
 
-        // Create chart group
         const svg = container
             .append('g')
             .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
@@ -78,7 +82,7 @@ export class PlayDistributionVis {
 
         const maxYards = d3.max(data, d => Math.max(d.avgRushYards || 0, d.avgPassYards || 0));
         const y = d3.scaleLinear()
-            .domain([0, maxYards * 1.1]) // Add 10% padding
+            .domain([0, maxYards * 1.1])
             .range([this.height, 0]);
 
         // Create grouped bars
@@ -87,6 +91,17 @@ export class PlayDistributionVis {
             .domain(subgroups)
             .range([0, x.bandwidth()])
             .padding(0.05);
+
+        // Add background rect for click-to-deselect
+        svg.append('rect')
+            .attr('class', 'background')
+            .attr('width', this.width)
+            .attr('height', this.height)
+            .attr('fill', 'transparent')
+            .on('click', () => {
+                this.selectedTeams.clear();
+                this.highlightTeams(this.selectedTeams);
+            });
 
         // Add bars
         const groups = svg.selectAll('g.team')
@@ -105,11 +120,26 @@ export class PlayDistributionVis {
             .attr('width', xSubgroup.bandwidth())
             .attr('height', d => Math.max(0, this.height - y(d.value)))
             .attr('fill', d => d.key === 'avgRushYards' ? this.colors.accent : this.colors.primary)
+            .style('opacity', 1)
+            .style('cursor', 'pointer')
+            .on('click', (event, d) => {
+                event.stopPropagation();  // Prevent background click from triggering
+                if (this.selectedTeams.has(d.team)) {
+                    this.selectedTeams.delete(d.team);
+                } else {
+                    this.selectedTeams.add(d.team);
+                }
+                this.highlightTeams(this.selectedTeams);
+            })
             .on('mouseover', (event, d) => {
                 const type = d.key === 'avgRushYards' ? 'Rush' : 'Pass';
                 this.showTooltip(event, `${d.team}: Avg ${type} Yards: ${d.value.toFixed(2)}`);
+                this.tempHighlight(d.team, true);
             })
-            .on('mouseout', () => this.hideTooltip());
+            .on('mouseout', (event, d) => {
+                this.hideTooltip();
+                this.tempHighlight(d.team, false);
+            });
 
         // Add axes
         svg.append('g')
@@ -182,6 +212,39 @@ export class PlayDistributionVis {
             .domain([0, maxPassYards * 1.1])
             .range([this.height, 0]);
 
+        // Create brush for scatter plot
+        const scatterBrush = d3.brush()
+            .extent([[0, 0], [this.width, this.height]])
+            .on('start brush end', (event) => {
+                if (!event.selection) {
+                    // If no selection, show all points normally
+                    this.selectedTeams.clear();
+                    this.highlightTeams(this.selectedTeams);
+                    return;
+                }
+
+                // Get the selection bounds
+                const [[x0, y0], [x1, y1]] = event.selection;
+
+                // Find all points within the brush selection
+                this.selectedTeams.clear();
+                svg.selectAll('circle').each((d) => {
+                    const cx = x(d.totalRushYards || 0);
+                    const cy = y(d.totalPassYards || 0);
+                    if (cx >= x0 && cx <= x1 && cy >= y0 && cy <= y1) {
+                        this.selectedTeams.add(d.team);
+                    }
+                });
+
+                // Highlight selected teams
+                this.highlightTeams(this.selectedTeams);
+            });
+
+        // Add brush to scatter plot
+        const scatterBrushGroup = svg.append('g')
+            .attr('class', 'brush')
+            .call(scatterBrush);
+
         // Add dots
         svg.selectAll('circle')
             .data(data)
@@ -191,55 +254,126 @@ export class PlayDistributionVis {
             .attr('cy', d => y(d.totalPassYards || 0))
             .attr('r', 6)
             .style('fill', this.colors.primary)
-            .style('opacity', 0.6)
+            .style('opacity', 1)
             .on('mouseover', (event, d) => {
                 this.showTooltip(event, 
                     `${d.team}\nRush Yards: ${(d.totalRushYards || 0).toFixed(0)}\nPass Yards: ${(d.totalPassYards || 0).toFixed(0)}`);
-                d3.select(event.target)
-                    .style('opacity', 1)
-                    .attr('r', 8);
+                this.tempHighlight(d.team, true);
             })
-            .on('mouseout', (event) => {
+            .on('mouseout', (event, d) => {
                 this.hideTooltip();
-                d3.select(event.target)
-                    .style('opacity', 0.6)
-                    .attr('r', 6);
+                this.tempHighlight(d.team, false);
             });
 
         // Add axes
         svg.append('g')
             .attr('transform', `translate(0,${this.height})`)
-            .call(d3.axisBottom(x)
-                .tickFormat(d => d3.format('.0f')(d)));
+            .call(d3.axisBottom(x).ticks(5));
 
         svg.append('g')
-            .call(d3.axisLeft(y)
-                .tickFormat(d => d3.format('.0f')(d)));
+            .call(d3.axisLeft(y).ticks(5));
 
         // Add labels
         svg.append('text')
-            .attr('x', this.width / 2)
-            .attr('y', this.height + 40)
-            .attr('text-anchor', 'middle')
-            .style('fill', this.colors.primary)
+            .attr('transform', `translate(${this.width/2},${this.height + 40})`)
+            .style('text-anchor', 'middle')
             .text('Total Rush Yards');
 
         svg.append('text')
             .attr('transform', 'rotate(-90)')
-            .attr('x', -this.height / 2)
             .attr('y', -40)
-            .attr('text-anchor', 'middle')
-            .style('fill', this.colors.primary)
+            .attr('x', -this.height/2)
+            .style('text-anchor', 'middle')
             .text('Total Pass Yards');
 
         // Add title
         svg.append('text')
-            .attr('x', this.width / 2)
-            .attr('y', -10)
+            .attr('x', this.width/2)
+            .attr('y', -20)
             .attr('text-anchor', 'middle')
             .style('font-size', '16px')
             .style('fill', this.colors.primary)
             .text('Total Rush vs Pass Yards by Team');
+    }
+
+    // Temporary highlight for hover
+    tempHighlight(team, highlight = true) {
+        // If there's an active brush selection, only highlight if the team is selected
+        if (this.selectedTeams.size > 0 && !this.selectedTeams.has(team)) return;
+
+        if (highlight) {
+            // Dim non-highlighted elements during hover
+            d3.select('#playTypeChart')
+                .selectAll('g.team')
+                .selectAll('rect')
+                .transition()
+                .duration(100)
+                .style('opacity', d => d.team === team ? 1 : 0.3);
+
+            d3.select('#scatterChart')
+                .selectAll('circle')
+                .transition()
+                .duration(100)
+                .style('opacity', d => d.team === team ? 1 : 0.3)
+                .attr('r', d => d.team === team ? 8 : 6);
+        } else {
+            // Restore full opacity when not hovering
+            if (this.selectedTeams.size === 0) {
+                d3.select('#playTypeChart')
+                    .selectAll('g.team')
+                    .selectAll('rect')
+                    .transition()
+                    .duration(100)
+                    .style('opacity', 1);
+
+                d3.select('#scatterChart')
+                    .selectAll('circle')
+                    .transition()
+                    .duration(100)
+                    .style('opacity', 1)
+                    .attr('r', 6);
+            } else {
+                // If there's a brush selection, restore brush selection highlighting
+                this.highlightTeams(this.selectedTeams);
+            }
+        }
+    }
+
+    // Brush selection highlight
+    highlightTeams(teams) {
+        this.selectedTeams = teams;
+        
+        if (teams.size === 0) {
+            // If no selection, reset all elements to full opacity
+            d3.select('#playTypeChart')
+                .selectAll('g.team')
+                .selectAll('rect')
+                .transition()
+                .duration(200)
+                .style('opacity', 1);
+
+            d3.select('#scatterChart')
+                .selectAll('circle')
+                .transition()
+                .duration(200)
+                .style('opacity', 1)
+                .attr('r', 6);
+        } else {
+            // Dim non-selected elements
+            d3.select('#playTypeChart')
+                .selectAll('g.team')
+                .selectAll('rect')
+                .transition()
+                .duration(200)
+                .style('opacity', d => teams.has(d.team) ? 1 : 0.3);
+
+            d3.select('#scatterChart')
+                .selectAll('circle')
+                .transition()
+                .duration(200)
+                .style('opacity', d => teams.has(d.team) ? 1 : 0.3)
+                .attr('r', 6);
+        }
     }
 
     showTooltip(event, text) {
