@@ -1,160 +1,210 @@
 export class SituationalSuccessVis {
     constructor() {
-        this.margin = {top: 40, right: 40, bottom: 60, left: 60};
-        this.width = 700 - this.margin.left - this.margin.right;
-        this.height = 400 - this.margin.top - this.margin.bottom;
+        this.width = 600;
+        this.height = 600;
+        this.radius = Math.min(this.width, this.height) / 2;
         this.colors = {
             primary: '#013369',
-            accent: '#D50A0A'
+            accent: '#D50A0A',
+            success: '#2ecc71',
+            neutral: '#95a5a6',
+            failure: '#e74c3c'
         };
     }
 
     async create(data) {
-        // Calculate success rate by down and play type
-        const successByDown = d3.rollup(data,
-            v => {
-                const successful = v.filter(d => d.yards_gained >= d.yards_to_go).length;
-                return (successful / v.length) * 100;
-            },
-            d => d.down,
-            d => d.play_type
-        );
-
-        const svg = this.createBaseSVG('#yardsChart');
-        this.createGroupedBarChart(svg, successByDown);
-    }
-
-    createBaseSVG(selector) {
-        // Clear any existing SVG
-        d3.select(selector).selectAll('*').remove();
+        // Process data for sunburst
+        const processedData = this.processData(data);
         
-        return d3.select(selector)
+        // Create the sunburst chart
+        // First clear the container
+        d3.select('#yardsChart').selectAll('*').remove();
+        
+        // Then create new SVG
+        const svg = d3.select('#yardsChart')
             .append('svg')
-            .attr('width', this.width + this.margin.left + this.margin.right)
-            .attr('height', this.height + this.margin.top + this.margin.bottom)
+            .attr('width', this.width)
+            .attr('height', this.height)
             .append('g')
-            .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
-    }
+            .attr('transform', `translate(${this.width / 2},${this.height / 2})`);
 
-    createGroupedBarChart(svg, data) {
-        // Check if we have data
-        if (!data || data.size === 0) {
-            svg.append('text')
-                .attr('x', this.width / 2)
-                .attr('y', this.height / 2)
-                .attr('text-anchor', 'middle')
-                .text('No data available for selected filters')
-                .style('fill', this.colors.primary);
-            return;
-        }
+        // Create color scale
+        const color = d3.scaleOrdinal()
+            .domain(['pass', 'run'])
+            .range([this.colors.primary, this.colors.accent]);
 
-        const downs = Array.from(data.keys()).sort();
-        const playTypes = Array.from(data.get(downs[0]).keys());
+        const secondLevelColor = d3.scaleOrdinal()
+            .domain(['success', 'neutral', 'failure'])
+            .range([this.colors.success, this.colors.neutral, this.colors.failure]);
 
-        // Create scales
-        const x0 = d3.scaleBand()
-            .domain(downs)
-            .rangeRound([0, this.width])
-            .paddingInner(0.1);
+        // Create partition layout
+        const partition = d3.partition()
+            .size([2 * Math.PI, this.radius]);
 
-        const x1 = d3.scaleBand()
-            .domain(playTypes)
-            .rangeRound([0, x0.bandwidth()])
-            .padding(0.05);
+        // Create arc generator
+        const arc = d3.arc()
+            .startAngle(d => d.x0)
+            .endAngle(d => d.x1)
+            .padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.005))
+            .padRadius(this.radius / 2)
+            .innerRadius(d => d.y0)
+            .outerRadius(d => d.y1 - 1);
 
-        const y = d3.scaleLinear()
-            .domain([0, 100])
-            .range([this.height, 0]);
+        // Prepare the data
+        const root = d3.hierarchy(processedData)
+            .sum(d => d.value)
+            .sort((a, b) => b.value - a.value);
+        
+        partition(root);
 
-        // Create bars
-        downs.forEach(down => {
-            const downGroup = svg.append('g')
-                .attr('transform', `translate(${x0(down)},0)`);
-
-            playTypes.forEach(type => {
-                const successRate = data.get(down).get(type);
-                
-                downGroup.append('rect')
-                    .attr('x', x1(type))
-                    .attr('y', y(successRate))
-                    .attr('width', x1.bandwidth())
-                    .attr('height', this.height - y(successRate))
-                    .attr('fill', type === 'pass' ? this.colors.primary : this.colors.accent)
-                    .on('mouseover', (event) => this.showTooltip(event, `${type} on ${down} down: ${successRate.toFixed(1)}% success`))
-                    .on('mouseout', () => this.hideTooltip());
-            });
-        });
-
-        // Add axes
-        svg.append('g')
-            .attr('transform', `translate(0,${this.height})`)
-            .call(d3.axisBottom(x0));
-
-        svg.append('g')
-            .call(d3.axisLeft(y).tickFormat(d => d + '%'));
+        // Create the arcs
+        svg.selectAll('path')
+            .data(root.descendants())
+            .join('path')
+            .attr('fill', d => {
+                if (d.depth === 0) return 'white';
+                if (d.depth === 1) return color(d.data.name);
+                return secondLevelColor(d.data.name);
+            })
+            .attr('d', arc)
+            .on('mouseover', (event, d) => {
+                const percentage = (100 * d.value / root.value).toFixed(1);
+                this.showTooltip(event, `${d.ancestors().map(d => d.data.name).reverse().join(' → ')}\n${d.value} plays (${percentage}%)`);
+            })
+            .on('mouseout', () => this.hideTooltip());
 
         // Add labels
-        this.createLabels(svg, 'Down', 'Success Rate (%)');
+        const textPositions = root.descendants().filter(d => d.depth > 0);
+        
+        svg.selectAll('text')
+            .data(textPositions)
+            .join('text')
+            .attr('transform', function(d) {
+                const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
+                const y = (d.y0 + d.y1) / 2;
+                return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
+            })
+            .attr('dy', '0.35em')
+            .attr('text-anchor', d => {
+                const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
+                return x < 180 ? 'start' : 'end';
+            })
+            .text(d => {
+                const percentage = (100 * d.value / root.value).toFixed(1);
+                if (percentage < 3) return ''; // Don't show text for small segments
+                return d.data.name;
+            })
+            .style('font-size', '12px')
+            .style('fill', 'white');
 
-        // Add legend
-        this.createLegend(svg, playTypes);
+        // Add title
+        svg.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('y', -this.radius - 20)
+            .style('font-size', '20px')
+            .style('fill', this.colors.primary)
+            .text('Play Outcomes Distribution');
     }
 
-    createLabels(svg, xLabel, yLabel) {
-        svg.append('text')
-            .attr('x', this.width / 2)
-            .attr('y', this.height + this.margin.bottom - 10)
-            .attr('text-anchor', 'middle')
-            .text(xLabel)
-            .style('fill', this.colors.primary);
+    processData(data) {
+        // Create hierarchical structure
+        const playOutcomes = {
+            name: 'All Plays',
+            children: []
+        };
 
-        svg.append('text')
-            .attr('transform', 'rotate(-90)')
-            .attr('x', -this.height / 2)
-            .attr('y', -this.margin.left + 20)
-            .attr('text-anchor', 'middle')
-            .text(yLabel)
-            .style('fill', this.colors.primary);
-    }
+        // Process pass plays
+        const passingPlays = data.filter(d => d.play_type === 'pass');
+        const passNode = {
+            name: 'pass',
+            children: [
+                {
+                    name: 'success',
+                    children: [
+                        {name: 'touchdown', value: passingPlays.filter(d => d.touchdown === 1).length},
+                        {name: 'first down', value: passingPlays.filter(d => d.first_down_pass === 1 && d.touchdown === 0).length},
+                        {name: 'positive yards', value: passingPlays.filter(d => d.yards_gained > 0 && d.first_down_pass === 0 && d.touchdown === 0).length}
+                    ]
+                },
+                {
+                    name: 'neutral',
+                    children: [
+                        {name: 'no gain', value: passingPlays.filter(d => d.yards_gained === 0 && !d.incomplete_pass).length},
+                        {name: 'incomplete', value: passingPlays.filter(d => d.incomplete_pass === 1).length}
+                    ]
+                },
+                {
+                    name: 'failure',
+                    children: [
+                        {name: 'interception', value: passingPlays.filter(d => d.interception === 1).length},
+                        {name: 'sack', value: passingPlays.filter(d => d.sack === 1).length},
+                        {name: 'loss yards', value: passingPlays.filter(d => d.yards_gained < 0 && d.sack === 0).length}
+                    ]
+                }
+            ]
+        };
 
-    createLegend(svg, playTypes) {
-        const legend = svg.append('g')
-            .attr('font-family', 'sans-serif')
-            .attr('font-size', 10)
-            .attr('text-anchor', 'start')
-            .selectAll('g')
-            .data(playTypes)
-            .enter().append('g')
-            .attr('transform', (d, i) => `translate(0,${i * 20 - 30})`);
+        // Process run plays
+        const runningPlays = data.filter(d => d.play_type === 'run');
+        const runNode = {
+            name: 'run',
+            children: [
+                {
+                    name: 'success',
+                    children: [
+                        {name: 'touchdown', value: runningPlays.filter(d => d.touchdown === 1).length},
+                        {name: 'first down', value: runningPlays.filter(d => d.first_down_rush === 1 && d.touchdown === 0).length},
+                        {name: 'positive yards', value: runningPlays.filter(d => d.yards_gained > 0 && d.first_down_rush === 0 && d.touchdown === 0).length}
+                    ]
+                },
+                {
+                    name: 'neutral',
+                    children: [
+                        {name: 'no gain', value: runningPlays.filter(d => d.yards_gained === 0).length}
+                    ]
+                },
+                {
+                    name: 'failure',
+                    children: [
+                        {name: 'fumble', value: runningPlays.filter(d => d.fumble === 1).length},
+                        {name: 'loss yards', value: runningPlays.filter(d => d.yards_gained < 0 && d.fumble === 0).length}
+                    ]
+                }
+            ]
+        };
 
-        legend.append('rect')
-            .attr('x', this.width - 19)
-            .attr('width', 19)
-            .attr('height', 19)
-            .attr('fill', d => d === 'pass' ? this.colors.primary : this.colors.accent);
-
-        legend.append('text')
-            .attr('x', this.width - 24)
-            .attr('y', 9.5)
-            .attr('dy', '0.32em')
-            .text(d => d);
+        playOutcomes.children = [passNode, runNode];
+        return playOutcomes;
     }
 
     showTooltip(event, text) {
-        const tooltip = d3.select('body').append('div')
-            .attr('class', 'tooltip')
-            .style('opacity', 0);
+        // Remove any existing tooltips first
+        this.hideTooltip();
+        
+        // Create tooltip div if it doesn't exist
+        let tooltip = d3.select('body').select('.tooltip');
+        if (tooltip.empty()) {
+            tooltip = d3.select('body').append('div')
+                .attr('class', 'tooltip')
+                .style('opacity', 0);
+        }
 
         tooltip.transition()
             .duration(200)
             .style('opacity', .9);
         
-        tooltip.html(text)
+        tooltip.html(text.replace(/\\n/g, '<br/>'))
             .style('left', (event.pageX + 10) + 'px')
             .style('top', (event.pageY - 28) + 'px');
     }
 
     hideTooltip() {
-        d3.select('.tooltip').remove();
+        const tooltip = d3.select('.tooltip');
+        if (!tooltip.empty()) {
+            tooltip.transition()
+                .duration(200)
+                .style('opacity', 0)
+                .remove();
+        }
     }
 }

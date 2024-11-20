@@ -20,20 +20,26 @@ export class PlayDistributionVis {
             ...d,
             yards_gained: +d.yards_gained || 0,
             play_type: d.play_type || '',
-            team: d.team || ''
+            team: d.posteam || ''  // Changed from team to posteam
         })).filter(d => d.team && d.play_type);
+
+        // Add debugging
+        console.log('Clean Data:', cleanData.slice(0, 5));
 
         // Calculate team statistics
         const teamStats = Array.from(d3.rollup(cleanData,
             v => ({
-                avgRushYards: d3.mean(v.filter(d => d.play_type === 'rush'), d => d.yards_gained) || 0,
+                avgRushYards: d3.mean(v.filter(d => d.play_type === 'run'), d => d.yards_gained) || 0,  // Changed from rush to run
                 avgPassYards: d3.mean(v.filter(d => d.play_type === 'pass'), d => d.yards_gained) || 0,
-                totalRushYards: d3.sum(v.filter(d => d.play_type === 'rush'), d => d.yards_gained) || 0,
+                totalRushYards: d3.sum(v.filter(d => d.play_type === 'run'), d => d.yards_gained) || 0,  // Changed from rush to run
                 totalPassYards: d3.sum(v.filter(d => d.play_type === 'pass'), d => d.yards_gained) || 0
             }),
             d => d.team
         ), ([team, stats]) => ({team, ...stats}))
         .filter(d => d.team && (d.avgRushYards > 0 || d.avgPassYards > 0));
+
+        // Add debugging
+        console.log('Team Stats:', teamStats);
 
         // Sort teams by total yards
         teamStats.sort((a, b) => 
