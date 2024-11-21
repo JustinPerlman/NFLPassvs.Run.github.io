@@ -63,18 +63,19 @@ class App {
 
 // Initialize scroll dots with section titles
 function initializeScrollDots() {
-    const sections = {
+    const sectionTitles = {
         'intro': 'Introduction',
-        'distribution': 'Team Performance',
-        'yards': 'Situational Success',
-        'scoring': 'Scoring Analysis',
+        'distribution': 'Play Distribution',
+        'yards': 'Yards Gained',
+        'scoring': 'Scoring Plays',
         'outcome': 'Play Outcomes',
-        'situation': 'Game Situations'
+        'situation': 'Game Situations',
+        'gameContext': 'Game Context Analysis'
     };
     
     document.querySelectorAll('.dots-nav a').forEach(dot => {
         const section = dot.getAttribute('data-section');
-        dot.setAttribute('data-title', sections[section]);
+        dot.setAttribute('data-title', sectionTitles[section]);
     });
 }
 
