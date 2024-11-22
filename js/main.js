@@ -1,16 +1,17 @@
 import { ScrollManager } from './scroll.js';
 import { PlayDistributionVis } from './visualizations/playDistribution.js';
 import { SituationalSuccessVis } from './visualizations/situationalSuccess.js';
-import { ScoringSituationVis } from './visualizations/scoringSituation.js';
-import { PlayOutcomeVis } from './visualizations/playOutcome.js';
-import { GameSituationVis } from './visualizations/gameSituation.js';
 import { GameContextVis } from './visualizations/gameContext.js';
 
 class App {
     constructor() {
         this.scrollManager = new ScrollManager();
         this.data = null;
-        this.visualizations = {};
+        this.visualizations = {
+            'distribution': new PlayDistributionVis(),
+            'yards': new SituationalSuccessVis(),
+            'gameContext': new GameContextVis()
+        };
     }
 
     async init() {
@@ -36,16 +37,6 @@ class App {
     }
 
     async initVisualizations() {
-        // Initialize each visualization class
-        this.visualizations = {
-            playDistribution: new PlayDistributionVis(),
-            situationalSuccess: new SituationalSuccessVis(),
-            scoringSituation: new ScoringSituationVis(),
-            playOutcome: new PlayOutcomeVis(),
-            gameSituation: new GameSituationVis(),
-            gameContext: new GameContextVis()
-        };
-
         // Create each visualization with the data
         for (const [name, vis] of Object.entries(this.visualizations)) {
             try {
@@ -59,6 +50,18 @@ class App {
             }
         }
     }
+
+    initializeScrolling() {
+        const sections = document.querySelectorAll('.section');
+        sections.forEach(section => {
+            const id = section.id;
+            if (this.visualizations[id]) {
+                this.scrollManager.addScene(id, () => {
+                    this.visualizations[id].update();
+                });
+            }
+        });
+    }
 }
 
 // Initialize scroll dots with section titles
@@ -67,10 +70,10 @@ function initializeScrollDots() {
         'intro': 'Introduction',
         'distribution': 'Play Distribution',
         'yards': 'Yards Gained',
-        'scoring': 'Scoring Plays',
-        'outcome': 'Play Outcomes',
-        'situation': 'Game Situations',
-        'gameContext': 'Game Context Analysis'
+        'outcome': 'Coming Soon',
+        'situation': 'Coming Soon',
+        'gameContext': 'Game Context Analysis',
+        'conclusions': 'Conclusions'
     };
     
     document.querySelectorAll('.dots-nav a').forEach(dot => {

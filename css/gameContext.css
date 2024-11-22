@@ -237,3 +237,52 @@ select {
     color: #666;
     line-height: 1.6;
 }
+
+/* Conclusions section styles */
+.conclusions-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+.main-conclusion {
+    font-size: 1.2em;
+    color: #013369;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.key-findings, .implications, .about-project {
+    margin-bottom: 30px;
+}
+
+.key-findings h3, .implications h3, .about-project h3 {
+    color: #013369;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+}
+
+.key-findings ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.key-findings li {
+    margin-bottom: 15px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.key-findings li:before {
+    content: "•";
+    color: #013369;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+.implications p, .about-project p {
+    color: #333;
+    text-align: justify;
+}
