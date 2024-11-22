@@ -1,0 +1,47 @@
+/* Team Performance Visualization */
+.chart-container {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 800px;
+}
+
+/* Chart Elements */
+.axis line,
+.axis path {
+    stroke: #ccc;
+}
+
+.axis text {
+    fill: var(--nfl-blue);
+    font-size: 12px;
+}
+
+.grid line {
+    stroke: #eee;
+}
+
+.grid path {
+    stroke-width: 0;
+}
+
+/* Data Points */
+.dot {
+    fill: var(--nfl-blue);
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.dot:hover {
+    opacity: 1;
+}
+
+/* Labels */
+.chart-description {
+    color: #666;
+    font-size: 14px;
+    margin: 10px 0;
+    text-align: center;
+}

@@ -1,0 +1,41 @@
+/* Play Outcome Visualization */
+.back-button {
+    display: none;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 5px 10px;
+    background-color: var(--nfl-blue);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.back-button:hover {
+    background-color: var(--nfl-red);
+}
+
+/* Sunburst Chart */
+.sunburst-path {
+    transition: opacity 0.3s;
+    cursor: pointer;
+}
+
+.sunburst-path:hover {
+    opacity: 0.8;
+}
+
+.sunburst-label {
+    pointer-events: none;
+    font-size: 12px;
+}
+
+.sunburst-label.light {
+    fill: white;
+}
+
+.sunburst-label.dark {
+    fill: var(--nfl-blue);
+}

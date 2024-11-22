@@ -1,0 +1,55 @@
+/* Navigation Dots */
+.dots-nav {
+    position: fixed;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+}
+
+.dots-nav ul {
+    list-style: none;
+}
+
+.dots-nav li {
+    margin: 15px 0;
+}
+
+.dots-nav a {
+    position: relative;
+    display: block;
+    width: 12px;
+    height: 12px;
+    margin: 10px 0;
+    border-radius: 50%;
+    background-color: var(--nfl-blue);
+    opacity: 0.3;
+    transition: opacity 0.3s;
+}
+
+.dots-nav a:hover,
+.dots-nav a.active {
+    opacity: 1;
+}
+
+.dots-nav a::before {
+    content: attr(data-title);
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    background-color: rgba(1, 51, 105, 0.9);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.dots-nav a:hover::before {
+    opacity: 1;
+    visibility: visible;
+}

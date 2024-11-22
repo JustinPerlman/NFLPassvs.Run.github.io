@@ -1,0 +1,26 @@
+/* Variables and Reset */
+:root {
+    --nfl-blue: #013369;
+    --nfl-red: #D50A0A;
+    --white: #ffffff;
+    --light-gray: #f4f4f4;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: var(--white);
+    color: var(--nfl-blue);
+    overflow-x: hidden;
+}
