@@ -286,3 +286,73 @@ select {
     color: #333;
     text-align: justify;
 }
+
+/* Turnover Location Visualization Styles */
+#turnoverChart {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.turnover-controls {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.play-type-button {
+    padding: 8px 16px;
+    border: 2px solid #013369;
+    background: white;
+    color: #013369;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.play-type-button:hover {
+    background: #013369;
+    color: white;
+}
+
+.play-type-button.active {
+    background: #013369;
+    color: white;
+}
+
+.field-section {
+    stroke: white;
+    stroke-width: 0.5;
+}
+
+.field-section:hover {
+    opacity: 0.9;
+    stroke-width: 1;
+}
+
+/* Tooltip Styles */
+.tooltip {
+    position: absolute;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #013369;
+    border-radius: 4px;
+    pointer-events: none;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-width: 200px;
+}
+
+.tooltip strong {
+    color: #013369;
+    display: block;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 3px;
+}
