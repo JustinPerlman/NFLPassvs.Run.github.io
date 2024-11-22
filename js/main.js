@@ -25,7 +25,7 @@ class App {
             this.scrollManager = new ScrollManager();
             
             // Load data and initialize visualizations
-            const data = await d3.csv('datamini.csv');
+            const data = await d3.csv('data.csv');
             
             // Initialize each visualization with the data
             for (const [id, vis] of Object.entries(this.visualizations)) {

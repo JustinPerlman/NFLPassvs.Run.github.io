@@ -232,8 +232,7 @@ export class TurnoverLocationVis {
             <strong>${playType.charAt(0).toUpperCase() + playType.slice(1)} Plays</strong><br>
             Location: ${location}<br>
             Yard Line: ${yardRange}<br>
-            ${turnoverType}: ${stats.turnovers}<br>
-            Total Plays: ${stats.totalPlays}<br>
+            ${turnoverType}: ${stats.turnovers}/${stats.totalPlays}<br>
             Turnover Rate: ${percentage}%
         `)
             .style('left', (event.pageX + 10) + 'px')

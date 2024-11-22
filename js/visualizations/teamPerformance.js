@@ -1,6 +1,6 @@
 export class TeamPerformanceVis {
     constructor() {
-        this.margin = {top: 40, right: 150, bottom: 120, left: 60};  
+        this.margin = {top: 40, right: 40, bottom: 40, left: 70};  
         this.width = 600 - this.margin.left - this.margin.right;
         this.height = 400 - this.margin.top - this.margin.bottom;
         this.colors = {
@@ -78,7 +78,7 @@ export class TeamPerformanceVis {
         const x = d3.scaleBand()
             .domain(data.map(d => d.team))
             .range([0, this.width])
-            .padding(0.1);
+            .padding(0.2);
 
         const maxYards = d3.max(data, d => Math.max(d.avgRushYards || 0, d.avgPassYards || 0));
         const y = d3.scaleLinear()
@@ -147,7 +147,9 @@ export class TeamPerformanceVis {
             .call(d3.axisBottom(x))
             .selectAll('text')
             .attr('transform', 'rotate(-45)')
-            .style('text-anchor', 'end');
+            .style('text-anchor', 'end')
+            .attr('dx', '-0.8em')
+            .attr('dy', '0.15em');
 
         svg.append('g')
             .call(d3.axisLeft(y).ticks(5));
@@ -160,33 +162,6 @@ export class TeamPerformanceVis {
             .style('font-size', '16px')
             .style('fill', this.colors.primary)
             .text('Average Yards per Play by Team');
-
-        // Add legend below graph
-        svg.append('rect')
-            .attr('x', this.width / 2 - 100)
-            .attr('y', this.height + 60)
-            .attr('width', 12)
-            .attr('height', 12)
-            .attr('fill', this.colors.accent);
-
-        svg.append('text')
-            .attr('x', this.width / 2 - 80)
-            .attr('y', this.height + 70)
-            .style('font-size', '12px')
-            .text('Rush');
-
-        svg.append('rect')
-            .attr('x', this.width / 2 + 20)
-            .attr('y', this.height + 60)
-            .attr('width', 12)
-            .attr('height', 12)
-            .attr('fill', this.colors.primary);
-
-        svg.append('text')
-            .attr('x', this.width / 2 + 40)
-            .attr('y', this.height + 70)
-            .style('font-size', '12px')
-            .text('Pass');
     }
 
     createScatterPlot(data) {
@@ -205,11 +180,11 @@ export class TeamPerformanceVis {
         const maxPassYards = d3.max(data, d => d.totalPassYards || 0);
 
         const x = d3.scaleLinear()
-            .domain([0, maxRushYards * 1.1])
+            .domain([8000, maxRushYards * 1.1])
             .range([0, this.width]);
 
         const y = d3.scaleLinear()
-            .domain([0, maxPassYards * 1.1])
+            .domain([15000, maxPassYards * 1.1])
             .range([this.height, 0]);
 
         // Create brush for scatter plot
@@ -281,7 +256,7 @@ export class TeamPerformanceVis {
 
         svg.append('text')
             .attr('transform', 'rotate(-90)')
-            .attr('y', -40)
+            .attr('y', -50)
             .attr('x', -this.height/2)
             .style('text-anchor', 'middle')
             .text('Total Pass Yards');
