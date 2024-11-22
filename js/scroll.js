@@ -30,8 +30,6 @@ export class ScrollManager {
                 targetSection.scrollIntoView({ behavior: 'smooth' });
             });
 
-            // Set the title attribute for hover text
-            const sectionName = dot.getAttribute('data-section');
             const title = dot.getAttribute('data-title');
             if (title) {
                 dot.setAttribute('title', title);

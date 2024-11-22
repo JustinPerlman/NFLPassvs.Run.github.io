@@ -1,4 +1,4 @@
-export class PlayDistributionVis {
+export class TeamPerformanceVis {
     constructor() {
         this.margin = {top: 40, right: 150, bottom: 120, left: 60};  
         this.width = 600 - this.margin.left - this.margin.right;

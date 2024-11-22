@@ -1,16 +1,18 @@
 import { ScrollManager } from './scroll.js';
-import { PlayDistributionVis } from './visualizations/playDistribution.js';
-import { SituationalSuccessVis } from './visualizations/situationalSuccess.js';
+import { TeamPerformanceVis } from './visualizations/teamPerformance.js';
+import { PlayOutcomeVis } from './visualizations/playOutcome.js';
 import { GameContextVis } from './visualizations/gameContext.js';
 import { TurnoverLocationVis } from './visualizations/turnoverLocation.js';
+import { ScoringDriveVis } from './visualizations/scoringDrive.js';
 
 class App {
     constructor() {
         this.visualizations = {
-            'distribution': new PlayDistributionVis(),
-            'yards': new SituationalSuccessVis(),
-            'gameContext': new GameContextVis(),
-            'situation': new TurnoverLocationVis()
+            'distribution': new TeamPerformanceVis(),
+            'outcome': new PlayOutcomeVis(),
+            'scoring': new ScoringDriveVis(),
+            'turnover': new TurnoverLocationVis(),
+            'gameContext': new GameContextVis()
         };
     }
 
@@ -23,7 +25,7 @@ class App {
             this.scrollManager = new ScrollManager();
             
             // Load data and initialize visualizations
-            const data = await d3.csv('../datamini.csv');
+            const data = await d3.csv('datamini.csv');
             
             // Initialize each visualization with the data
             for (const [id, vis] of Object.entries(this.visualizations)) {
@@ -36,6 +38,7 @@ class App {
                 }
             }
 
+            // Set up scroll tracking without updates
             this.initializeScrolling();
         } catch (error) {
             console.error('Error initializing application:', error);
@@ -47,11 +50,8 @@ class App {
         sections.forEach(section => {
             const id = section.id;
             if (this.visualizations[id]) {
-                this.scrollManager.addScene(id, () => {
-                    if (typeof this.visualizations[id].update === 'function') {
-                        this.visualizations[id].update();
-                    }
-                });
+                // Just track the section without triggering updates
+                this.scrollManager.addScene(id, () => {});
             }
         });
     }
@@ -61,10 +61,10 @@ class App {
 function initializeScrollDots() {
     const sectionTitles = {
         'intro': 'Introduction',
-        'distribution': 'Play Distribution',
-        'yards': 'Yards Gained',
-        'outcome': 'Coming Soon',
-        'situation': 'Turnover Location Analysis',
+        'distribution': 'Team Performance',
+        'outcome': 'Play Outcome Breakdown',
+        'scoring': 'Scoring Drive Distribution',
+        'turnover': 'Turnover Location',
         'gameContext': 'Game Context Analysis',
         'conclusions': 'Conclusions'
     };

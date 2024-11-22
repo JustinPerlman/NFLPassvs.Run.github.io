@@ -9,17 +9,22 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        #scoring {
+            padding-bottom: 40px;
+        }
+    </style>
 </head>
 <body>
     <nav class="dots-nav">
         <ul>
-            <li><a href="#intro" class="active" data-section="intro"></a></li>
-            <li><a href="#distribution" data-section="distribution"></a></li>
-            <li><a href="#yards" data-section="yards"></a></li>
-            <li><a href="#outcome" data-section="outcome"></a></li>
-            <li><a href="#situation" data-section="situation"></a></li>
-            <li><a href="#gameContext" data-title="Game Context Analysis" data-section="gameContext"></a></li>
-            <li><a href="#conclusions" data-section="conclusions"></a></li>
+            <li><a href="#intro" class="active" data-section="intro" title="Introduction"></a></li>
+            <li><a href="#distribution" data-section="distribution" title="Team Performance"></a></li>
+            <li><a href="#outcome" data-section="outcome" title="Play Outcome Breakdown"></a></li>
+            <li><a href="#scoring" data-section="scoring" title="Scoring Drive Distribution"></a></li>
+            <li><a href="#turnover" data-section="turnover" title="Turnover Location"></a></li>
+            <li><a href="#gameContext" data-section="gameContext" title="Game Context Analysis"></a></li>
+            <li><a href="#conclusions" data-section="conclusions" title="Conclusions"></a></li>
         </ul>
     </nav>
 
@@ -37,7 +42,7 @@
 
         <section id="distribution" class="section">
             <div class="content">
-                <h2>Team Performance Analysis</h2>
+                <h2>Team Performance</h2>
                 <p>Analyze how each team performs in rushing and passing plays, both in terms of average yards per play and total yards gained.</p>
                 
                 <div class="visualization-container">
@@ -53,32 +58,31 @@
             </div>
         </section>
 
-        <section id="yards" class="section">
+        <section id="outcome" class="section">
             <div class="content">
-                <h2>Situational Success</h2>
+                <h2>Play Outcome Breakdown</h2>
                 <p class="description">
                     Analyze how teams perform on different downs. This visualization breaks down 
                     the success rates of passing and rushing plays by down number, revealing how 
                     teams adapt their strategies as they progress through each set of downs.
                 </p>
-                <div id="yardsChart" class="chart"></div>
-            </div>
-        </section>
-
-        <section id="outcome" class="section">
-            <div class="content">
-                <h2>Coming Soon</h2>
-                <p class="description">
-                    New visualization coming soon! This section will feature an interactive analysis
-                    of NFL play data, providing insights into strategic decision-making in football.
-                </p>
                 <div id="outcomeChart" class="chart"></div>
             </div>
         </section>
 
-        <section id="situation" class="section">
+        <section id="scoring" class="section">
             <div class="content">
-                <h2>Turnover Location Analysis</h2>
+                <h2>Scoring Drive Distribution</h2>
+                <p class="description">
+                    Analyze how the balance between passing and rushing plays affects scoring outcomes across different drive scenarios.
+                </p>
+                <div id="scoringChart" class="chart"></div>
+            </div>
+        </section>
+
+        <section id="turnover" class="section">
+            <div class="content">
+                <h2>Turnover Location</h2>
                 <p class="description">
                     Explore where turnovers occur on the football field. This heatmap visualization shows the 
                     turnover rates for different field locations, separated by run and pass plays. Red areas 
@@ -198,6 +202,14 @@
             </div>
         </section>
     </main>
+
+    <div class="scroll-dots">
+        <div class="dot" data-section="distribution" title="Team Performance"></div>
+        <div class="dot" data-section="outcome" title="Play Outcome Breakdown"></div>
+        <div class="dot" data-section="turnover" title="Turnover Location"></div>
+        <div class="dot" data-section="scoring" title="Scoring Drive Distribution"></div>
+        <div class="dot" data-section="gameContext" title="Game Context Analysis"></div>
+    </div>
 
     <script type="module" src="js/main.js"></script>
 </body>
