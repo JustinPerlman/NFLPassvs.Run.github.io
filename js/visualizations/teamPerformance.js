@@ -178,13 +178,15 @@ export class TeamPerformanceVis {
         // Create scales with padding
         const maxRushYards = d3.max(data, d => d.totalRushYards || 0);
         const maxPassYards = d3.max(data, d => d.totalPassYards || 0);
+        const minRushYards = d3.min(data, d => d.totalRushYards || 0);
+        const minPassYards = d3.min(data, d => d.totalPassYards || 0);
 
         const x = d3.scaleLinear()
-            .domain([8000, maxRushYards * 1.1])
+            .domain([minRushYards / 1.1, maxRushYards * 1.1])
             .range([0, this.width]);
 
         const y = d3.scaleLinear()
-            .domain([15000, maxPassYards * 1.1])
+            .domain([minPassYards / 1.1, maxPassYards * 1.1])
             .range([this.height, 0]);
 
         // Create brush for scatter plot
