@@ -47,7 +47,7 @@
         <section id="intro" class="section active">
             <div class="content">
                 <h1>NFL Play Analysis</h1>
-                <p>Explore how teams in the NFL call run and pass plays and how their effectiveness changes across different game situations.</p>
+                <p>The eternal debate in NFL strategy centers on the balance between rushing and passing plays. As the league has evolved, teams have developed diverse approaches to moving the ball downfield, each with their own risks and rewards. Through a detailed analysis of NFL play data, we can uncover patterns that reveal how teams utilize these two fundamental aspects of football and their impact on game outcomes.</p>
                 <div class="scroll-hint">
                     <p>Scroll to explore</p>
                     <div class="arrow"></div>
@@ -58,7 +58,7 @@
         <section id="distribution" class="section">
             <div class="content">
                 <h2>Team Performance</h2>
-                <p>Analyze how each team performs in rushing and passing plays, both in terms of average yards per play and total yards gained.</p>
+                <p>Looking at the relationship between rushing and passing yards, we see a fascinating disparity in how teams distribute their offensive production. While most teams accumulate between 15,000 and 35,000 passing yards compared to 6,000-16,000 rushing yards, there's significant variation in their approaches. Some teams maintain a balanced attack, while others lean heavily on their passing game, reflecting both their roster strengths and offensive philosophies. The average yards per play further highlights this distinction, with passing plays typically gaining more yards but coming with increased risk.</p>
                 
                 <div class="visualization-container">
                     <div class="chart-container">
@@ -77,9 +77,7 @@
             <div class="content">
                 <h2>Play Outcome Breakdown</h2>
                 <p class="description">
-                    Analyze how teams perform on different downs. This visualization breaks down 
-                    the success rates of passing and rushing plays by down number, revealing how 
-                    teams adapt their strategies as they progress through each set of downs.
+                    The distribution of play outcomes reveals the risk-reward nature of passing versus rushing. Passing plays show a wider variance in outcomes, ranging from incomplete passes and interceptions to big gains downfield. In contrast, rushing plays demonstrate more consistent, albeit usually smaller, gains. This visualization helps explain why teams often rely on rushing plays in critical situations where ball security is paramount, despite the allure of bigger gains through the air.
                 </p>
                 <div id="outcomeChart" class="chart"></div>
             </div>
@@ -89,7 +87,7 @@
             <div class="content">
                 <h2>Scoring Drive Distribution</h2>
                 <p class="description">
-                    Analyze how the balance between passing and rushing plays affects scoring outcomes across different drive scenarios.
+                    Analyzing scoring drives provides insight into how teams construct their successful offensive series. While passing plays often feature prominently in quick-scoring drives, especially when teams are trailing, rushing plays become increasingly important in longer drives that help control game tempo and wear down defensive units. This balance between explosive passing plays and methodical rushing attacks often defines a team's scoring identity.
                 </p>
                 <div id="scoringChart" class="chart"></div>
             </div>
@@ -99,9 +97,7 @@
             <div class="content">
                 <h2>Turnover Location</h2>
                 <p class="description">
-                    Explore where turnovers occur on the football field. This heatmap visualization shows the 
-                    turnover rates for different field locations, separated by run and pass plays. Red areas 
-                    indicate higher turnover rates, while green areas show safer zones with fewer turnovers.
+                    The spatial distribution of turnovers tells a compelling story about risk management. Interceptions tend to occur more frequently in certain areas of the field, particularly on longer passing attempts, while fumbles on rushing plays show a more uniform distribution. This pattern influences play-calling decisions, especially in different field positions where the risk of turning over the ball could dramatically swing game momentum.
                 </p>
                 <div id="turnoverChart" class="chart"></div>
             </div>
@@ -111,9 +107,7 @@
             <div class="content">
                 <h2>Game Context Analysis</h2>
                 <p class="section-description">
-                    The decision to run or pass isn't made in isolation. Field position and game situation 
-                    all play crucial roles in determining play selection. Explore how teams adapt their strategy 
-                    based on these factors.
+                    The influence of game situation on play-calling reveals how teams adapt their rushing-passing balance. In early downs with manageable distances, teams maintain a relatively even distribution between runs and passes. However, as downs progress or in obvious passing situations (like third-and-long or when trailing late), the balance shifts dramatically toward passing plays. This visualization demonstrates how game context forces teams to sometimes abandon their preferred offensive balance.
                 </p>
                 <div class="visualization-container">
                     <div class="controls-panel">
@@ -185,14 +179,7 @@
                     
                     <div class="key-findings">
                         <h3>Key Findings</h3>
-                        <ul>
-                            <li>Game context significantly influences play-calling decisions, with teams adjusting their 
-                                strategies based on field position, down, and distance.</li>
-                            <li>Score differential plays a crucial role in determining run-pass balance, 
-                                particularly in late-game situations.</li>
-                            <li>Teams show distinct patterns in their play-calling preferences, reflecting 
-                                different offensive philosophies and strengths.</li>
-                        </ul>
+                        The data paints a picture of modern NFL offense as a complex ecosystem where rushing and passing plays serve complementary roles. While passing plays dominate in terms of total yardage and remain the primary vehicle for explosive plays, rushing plays provide stability, ball control, and crucial tactical advantages in specific game situations. The most successful teams aren't necessarily those that excel in one aspect, but those that can effectively blend both elements while minimizing their respective risks. This balance, tailored to each team's personnel and adjusted for game context, continues to define offensive success in the NFL.
                     </div>
 
                     <div class="implications">
