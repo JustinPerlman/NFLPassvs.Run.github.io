@@ -10,6 +10,7 @@ export class GameContextVis {
         };
         this.data = null;
         this.fieldSvg = null;
+        this.chartHeight = null;
     }
 
     async initialize() {
@@ -61,6 +62,9 @@ export class GameContextVis {
             .append('g')
             .attr('transform', `translate(${this.margin.left},${this.margin.top})`);
 
+        // Store height for later use
+        this.chartHeight = height;
+
         // Create scales
         this.xScale = d3.scaleLinear()
             .domain([0, 100])
@@ -68,12 +72,12 @@ export class GameContextVis {
 
         this.yScale = d3.scaleLinear()
             .domain([0, 1])
-            .range([height, 0]);
+            .range([this.chartHeight, 0]);
 
-        // Add axes
+        // Add axes with exact positioning
         this.fieldSvg.append('g')
             .attr('class', 'x-axis')
-            .attr('transform', `translate(0,${height})`)
+            .attr('transform', `translate(0,${this.chartHeight})`)
             .call(d3.axisBottom(this.xScale)
                 .tickValues([0, 20, 40, 60, 80, 100])
                 .tickFormat(d => d === 50 ? '50' : d < 50 ? `Own ${d}` : `Opp ${100-d}`));
@@ -305,7 +309,7 @@ export class GameContextVis {
 
         const yScale = d3.scaleLinear()
             .domain([0, 1])
-            .range([this.fieldSvg.node().getBoundingClientRect().height - this.margin.bottom, 0]);
+            .range([this.chartHeight, 0]);
 
         // Update y-axis with transition
         this.fieldSvg.select('.y-axis')
@@ -319,7 +323,7 @@ export class GameContextVis {
 
         // Create/update bar groups with transition
         const bars = this.fieldSvg.selectAll('.play-bar-group')
-            .data(binnedData, d => d.fieldPosition); // Use fieldPosition as key for smooth transitions
+            .data(binnedData, d => d.fieldPosition);
 
         // Remove old bars with transition
         bars.exit()
@@ -340,7 +344,7 @@ export class GameContextVis {
             .attr('class', 'run-bar')
             .attr('x', 0)
             .attr('width', barWidth)
-            .attr('y', yScale(0))
+            .attr('y', this.chartHeight)  // Start at the bottom
             .attr('height', 0)
             .attr('fill', this.colors.run)
             .style('opacity', 0.8);
@@ -350,7 +354,7 @@ export class GameContextVis {
             .attr('class', 'pass-bar')
             .attr('x', 0)
             .attr('width', barWidth)
-            .attr('y', yScale(1))
+            .attr('y', this.chartHeight)  // Start at the bottom
             .attr('height', 0)
             .attr('fill', this.colors.pass)
             .style('opacity', 0.8);
@@ -370,7 +374,7 @@ export class GameContextVis {
             .duration(750)
             .attr('width', barWidth)
             .attr('y', d => yScale(d.runPercent))
-            .attr('height', d => yScale(0) - yScale(d.runPercent));
+            .attr('height', d => this.chartHeight - yScale(d.runPercent));
 
         // Transition pass bars
         allBars.select('.pass-bar')
