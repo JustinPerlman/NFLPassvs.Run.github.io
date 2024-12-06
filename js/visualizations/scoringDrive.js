@@ -104,7 +104,7 @@ export class ScoringDriveVis {
         const passRatio = playCount.pass / playCount.total;
 
         // Group drives by their pass/run ratio into bins
-        const binSize = 0.05; // 5% bins
+        const binSize = 0.05;
         const binIndex = Math.floor(passRatio / binSize);
         const binKey = binIndex * binSize;
 
@@ -135,7 +135,7 @@ export class ScoringDriveVis {
         const chartWidth = this.width - this.margin.left - this.margin.right;
         const chartHeight = this.height - this.margin.top - this.margin.bottom;
 
-        // Convert Map to Array for D3
+        // Convert Map to rray for D3
         const data = Array.from(this.driveStats.values());
 
         // Create scales
@@ -165,7 +165,7 @@ export class ScoringDriveVis {
             .style("text-anchor", "end")
             .attr("dx", "-.8em")
             .attr("dy", ".15em")
-            .attr("transform", "rotate(-45)");  // Rotate labels for better readability
+            .attr("transform", "rotate(-45)");
 
         // Add x-axis label
         chart.append('text')

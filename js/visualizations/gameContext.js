@@ -119,7 +119,7 @@ export class GameContextVis {
     }
 
     setupControls() {
-        // Down buttons - ensure only one is active
+        // Down buttons
         d3.selectAll('.down-button').each(function() {
             const button = d3.select(this);
             if (button.attr('data-down') === '') {
@@ -249,7 +249,6 @@ export class GameContextVis {
                 }
             }
 
-            // For yards to go range, if max is 20, include all plays with 20+ yards
             const ydsToGoMatch = ydsToGoMax === 20 ?
                 (d.ydstogo >= ydsToGoMin) :
                 (d.ydstogo >= ydsToGoMin && d.ydstogo <= ydsToGoMax);

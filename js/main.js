@@ -18,13 +18,13 @@ class App {
 
     async init() {
         try {
-            // Initialize scroll dots first
+            // Initialize scroll dots
             initializeScrollDots();
             
-            // Then create scroll manager
+            // Create scroll manager
             this.scrollManager = new ScrollManager();
             
-            // Load data and initialize visualizations
+            // Load data
             const data = await d3.csv('./datamini.csv');
             
             // Initialize each visualization with the data
@@ -50,14 +50,13 @@ class App {
         sections.forEach(section => {
             const id = section.id;
             if (this.visualizations[id]) {
-                // Just track the section without triggering updates
                 this.scrollManager.addScene(id, () => {});
             }
         });
     }
 }
 
-// Initialize scroll dots with section titles
+// Initialize scroll dots
 function initializeScrollDots() {
     const sectionTitles = {
         'intro': 'Introduction',
@@ -74,12 +73,11 @@ function initializeScrollDots() {
         const title = sectionTitles[section];
         if (title) {
             dot.setAttribute('data-title', title);
-            dot.setAttribute('title', title); // Add title attribute for native tooltip
+            dot.setAttribute('title', title);
         }
     });
 }
 
-// Initialize the application when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     const app = new App();
     app.init();

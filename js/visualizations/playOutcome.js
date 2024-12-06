@@ -311,7 +311,7 @@ export class PlayOutcomeVis {
             children: []
         };
 
-        // Convert numeric strings to numbers and normalize play types
+        // Convert strings to numbers and normalize play types
         data = data.map(d => ({
             ...d,
             play_type: d.play_type.toLowerCase().trim(),
@@ -549,7 +549,7 @@ export class PlayOutcomeVis {
             g = parseInt(rgb[1]);
             b = parseInt(rgb[2]);
         } else {
-            return true; // Default to white text
+            return true; // Default = white text
         }
         
         // Calculate relative luminance
