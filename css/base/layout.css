@@ -59,6 +59,21 @@
     max-width: 800px;
 }
 
+/* Key Findings and Implications */
+.key-findings ul,
+.implications ul {
+    list-style-position: inside;
+    padding-left: 0;
+    text-align: center;
+    display: inline-block;
+}
+
+.key-findings li,
+.implications li {
+    margin-bottom: 8px;
+    text-align: center;
+}
+
 /* Color Legend */
 .color-legend {
     position: fixed;
