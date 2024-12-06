@@ -147,9 +147,7 @@ export class ScoringDriveVis {
             .domain([0, d3.max(data, d => d.averagePoints)])
             .range([chartHeight, 0]);
 
-        const radius = d3.scaleLinear()
-            .domain([0, d3.max(data, d => d.totalDrives)])
-            .range([5, 20]);
+        const circleRadius = 9;
 
         // Create chart group
         const chart = this.svg.append('g')
@@ -239,15 +237,20 @@ export class ScoringDriveVis {
             .attr('stop-color', this.colors.pass);
 
         // Add circles for each bin
-        const circles = chart.selectAll('circle')
+        chart.selectAll('circle')
             .data(data)
-            .enter()
-            .append('circle')
+            .join('circle')
             .attr('cx', d => x(d.passRatio))
             .attr('cy', d => y(d.averagePoints))
-            .attr('r', d => radius(d.totalDrives))
-            .attr('fill', d => d3.interpolateRgb(this.colors.run, this.colors.pass)(d.passRatio))
-            .attr('opacity', 0.7)
+            .attr('r', circleRadius)
+            .attr('fill', d => {
+                // Color based on pass ratio
+                const passRatio = d.passRatio;
+                return d3.interpolateRgb(this.colors.run, this.colors.pass)(passRatio);
+            })
+            .attr('stroke', 'white')
+            .attr('stroke-width', 1)
+            .style('opacity', 0.8)
             .on('mouseover', (event, d) => {
                 d3.select(event.currentTarget)
                     .attr('opacity', 1)
@@ -257,8 +260,8 @@ export class ScoringDriveVis {
             })
             .on('mouseout', (event) => {
                 d3.select(event.currentTarget)
-                    .attr('opacity', 0.7)
-                    .attr('stroke', 'none');
+                    .attr('opacity', 0.8)
+                    .attr('stroke', 'white');
                 this.hideTooltip();
             });
     }

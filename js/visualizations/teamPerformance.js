@@ -1,6 +1,6 @@
 export class TeamPerformanceVis {
     constructor() {
-        this.margin = {top: 40, right: 40, bottom: 40, left: 70};  
+        this.margin = {top: 40, right: 40, bottom: 80, left: 70};  
         this.width = 600 - this.margin.left - this.margin.right;
         this.height = 400 - this.margin.top - this.margin.bottom;
         this.colors = {
@@ -162,6 +162,30 @@ export class TeamPerformanceVis {
             .style('font-size', '16px')
             .style('fill', this.colors.primary)
             .text('Average Yards per Play by Team');
+
+        // Add labels
+        svg.append('text')
+            .attr('transform', `translate(${this.width/2},${this.height + 65})`)
+            .style('text-anchor', 'middle')
+            .attr('y', -17)
+            .text('Team');
+
+        svg.append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', -50)
+            .attr('x', -this.height/2)
+            .style('text-anchor', 'middle')
+            .text('Average Yards by Play Type');
+
+        // Add interaction instruction text
+        d3.select('#playTypeChart')
+            .append('div')
+            .attr('class', 'interaction-hint')
+            .style('text-align', 'center')
+            .style('color', '#666')
+            .style('font-size', '14px')
+            .style('margin-top', '10px')
+            .text('Click on bars to select teams. Hover for details.');
     }
 
     createScatterPlot(data) {
@@ -271,6 +295,16 @@ export class TeamPerformanceVis {
             .style('font-size', '16px')
             .style('fill', this.colors.primary)
             .text('Total Rush vs Pass Yards by Team');
+
+        // Add interaction instruction text
+        d3.select('#scatterChart')
+            .append('div')
+            .attr('class', 'interaction-hint')
+            .style('text-align', 'center')
+            .style('color', '#666')
+            .style('font-size', '14px')
+            .style('margin-top', '10px')
+            .text('Click and drag to select teams. Hover for details.');
     }
 
     // Temporary highlight for hover

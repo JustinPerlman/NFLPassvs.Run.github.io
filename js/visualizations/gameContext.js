@@ -282,9 +282,8 @@ export class GameContextVis {
     }
 
     updateFieldPositionChart(filteredData) {
-        // Group data by field position
-        const binWidth = 5; // 5-yard bins
-        const bins = d3.range(0, 101, binWidth);
+        const binWidth = 5;
+        const bins = d3.range(0, 96, binWidth);
         
         const binnedData = bins.map(bin => {
             const playsInBin = filteredData.filter(d => 
@@ -295,75 +294,134 @@ export class GameContextVis {
             const runPlays = playsInBin.filter(d => d.isRun).length;
             
             return {
-                fieldPosition: bin + binWidth/2,
-                passPercentage: totalPlays ? passPlays / totalPlays : 0,
-                runPercentage: totalPlays ? runPlays / totalPlays : 0
+                fieldPosition: bin,
+                total: totalPlays,
+                pass: passPlays,
+                run: runPlays,
+                passPercent: totalPlays ? (passPlays / totalPlays) : 0,
+                runPercent: totalPlays ? (runPlays / totalPlays) : 0
             };
         });
 
-        // Create line generators
-        const passLine = d3.line()
-            .x(d => this.xScale(d.fieldPosition))
-            .y(d => this.yScale(d.passPercentage))
-            .curve(d3.curveCatmullRom);
+        const yScale = d3.scaleLinear()
+            .domain([0, 1])
+            .range([this.fieldSvg.node().getBoundingClientRect().height - this.margin.bottom, 0]);
 
-        const runLine = d3.line()
-            .x(d => this.xScale(d.fieldPosition))
-            .y(d => this.yScale(d.runPercentage))
-            .curve(d3.curveCatmullRom);
-
-        // Update pass line with transition
-        const passPath = this.fieldSvg.selectAll('.pass-line').data([binnedData]);
-        
-        // Handle enter selection
-        const passEnter = passPath.enter()
-            .append('path')
-            .attr('class', 'line pass-line')
-            .attr('d', passLine)
-            .style('fill', 'none')
-            .style('stroke', this.colors.pass)
-            .style('stroke-width', 3)
-            .style('opacity', 0);
-
-        // Handle update selection
-        const passMerge = passPath.merge(passEnter)
+        // Update y-axis with transition
+        this.fieldSvg.select('.y-axis')
             .transition()
             .duration(750)
-            .style('opacity', 1)
-            .attr('d', passLine);
+            .call(d3.axisLeft(yScale)
+                .tickFormat(d => d3.format('.0%')(d)));
 
-        // Handle exit selection
-        passPath.exit()
+        // Bar width with some padding
+        const barWidth = (this.xScale(binWidth) - this.xScale(0)) * 0.9;
+
+        // Create/update bar groups with transition
+        const bars = this.fieldSvg.selectAll('.play-bar-group')
+            .data(binnedData, d => d.fieldPosition); // Use fieldPosition as key for smooth transitions
+
+        // Remove old bars with transition
+        bars.exit()
             .transition()
             .duration(750)
             .style('opacity', 0)
             .remove();
 
-        // Update run line with transition
-        const runPath = this.fieldSvg.selectAll('.run-line').data([binnedData]);
-        
-        // Handle enter selection
-        const runEnter = runPath.enter()
-            .append('path')
-            .attr('class', 'line run-line')
-            .attr('d', runLine)
-            .style('fill', 'none')
-            .style('stroke', this.colors.run)
-            .style('stroke-width', 3)
+        // Create new bar groups
+        const barsEnter = bars.enter()
+            .append('g')
+            .attr('class', 'play-bar-group')
+            .attr('transform', d => `translate(${this.xScale(d.fieldPosition)},0)`)
             .style('opacity', 0);
 
-        // Handle update selection
-        const runMerge = runPath.merge(runEnter)
-            .transition()
+        // Add run bars to entering groups
+        barsEnter.append('rect')
+            .attr('class', 'run-bar')
+            .attr('x', 0)
+            .attr('width', barWidth)
+            .attr('y', yScale(0))
+            .attr('height', 0)
+            .attr('fill', this.colors.run)
+            .style('opacity', 0.8);
+
+        // Add pass bars to entering groups
+        barsEnter.append('rect')
+            .attr('class', 'pass-bar')
+            .attr('x', 0)
+            .attr('width', barWidth)
+            .attr('y', yScale(1))
+            .attr('height', 0)
+            .attr('fill', this.colors.pass)
+            .style('opacity', 0.8);
+
+        // Merge enter and update selections
+        const allBars = bars.merge(barsEnter);
+
+        // Transition the container groups
+        allBars.transition()
             .duration(750)
             .style('opacity', 1)
-            .attr('d', runLine);
+            .attr('transform', d => `translate(${this.xScale(d.fieldPosition)},0)`);
 
-        // Handle exit selection
-        runPath.exit()
+        // Transition run bars
+        allBars.select('.run-bar')
             .transition()
             .duration(750)
-            .style('opacity', 0)
-            .remove();
+            .attr('width', barWidth)
+            .attr('y', d => yScale(d.runPercent))
+            .attr('height', d => yScale(0) - yScale(d.runPercent));
+
+        // Transition pass bars
+        allBars.select('.pass-bar')
+            .transition()
+            .duration(750)
+            .attr('width', barWidth)
+            .attr('y', d => yScale(1))
+            .attr('height', d => yScale(d.runPercent) - yScale(1));
+
+        // Add hover effects
+        allBars
+            .on('mouseover', (event, d) => {
+                const passPercent = (d.passPercent * 100).toFixed(1);
+                const runPercent = (d.runPercent * 100).toFixed(1);
+                
+                const tooltip = d3.select('body').append('div')
+                    .attr('class', 'tooltip')
+                    .style('opacity', 0)
+                    .style('position', 'absolute')
+                    .style('background-color', 'white')
+                    .style('padding', '10px')
+                    .style('border', '1px solid #ddd')
+                    .style('border-radius', '4px');
+
+                tooltip.html(`
+                    <strong>Field Position: ${this.formatFieldPosition(d.fieldPosition)}</strong><br>
+                    Total Plays: ${d.total}<br>
+                    Pass Plays: ${d.pass} (${passPercent}%)<br>
+                    Run Plays: ${d.run} (${runPercent}%)
+                `)
+                    .style('left', (event.pageX + 10) + 'px')
+                    .style('top', (event.pageY - 28) + 'px')
+                    .transition()
+                    .duration(200)
+                    .style('opacity', 0.9);
+
+                d3.select(event.currentTarget).selectAll('rect')
+                    .style('opacity', 1)
+                    .style('stroke', '#333')
+                    .style('stroke-width', 1);
+            })
+            .on('mouseout', (event) => {
+                d3.selectAll('.tooltip').remove();
+                d3.select(event.currentTarget).selectAll('rect')
+                    .style('opacity', 0.8)
+                    .style('stroke', 'none');
+            });
+    }
+
+    formatFieldPosition(yards) {
+        if (yards === 50) return '50';
+        return yards < 50 ? `Own ${yards}` : `Opp ${100-yards}`;
     }
 }

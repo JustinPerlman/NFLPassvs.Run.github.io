@@ -63,11 +63,11 @@
                 <div class="visualization-container">
                     <div class="chart-container">
                         <div id="playTypeChart"></div>
-                        <p class="chart-description">Average yards gained per play type for each team.</p>
+                        <p class="chart-description"></p>
                     </div>
                     <div class="chart-container">
                         <div id="scatterChart"></div>
-                        <p class="chart-description">Total rushing vs passing yards for each team.</p>
+                        <p class="chart-description"></p>
                     </div>
                 </div>
             </div>
@@ -77,7 +77,7 @@
             <div class="content">
                 <h2>Play Outcome Breakdown</h2>
                 <p class="description">
-                    The distribution of play outcomes reveals the risk-reward nature of passing versus rushing. Passing plays show a wider variance in outcomes, ranging from incomplete passes and interceptions to big gains downfield. In contrast, rushing plays demonstrate more consistent, albeit usually smaller, gains. This visualization helps explain why teams often rely on rushing plays in critical situations where ball security is paramount, despite the allure of bigger gains through the air.
+                    The distribution of play outcomes reveals the risk-reward nature of passing versus rushing. Passing plays show a wider variance in outcomes, ranging from incomplete passes and interceptions to big gains downfield. In contrast, rushing plays demonstrate more consistent, albeit usually smaller, gains. This visualization helps explain why teams often rely on rushing plays in critical situations where ball security is paramount, while relying on passing plays when large yardage gain is necessary.
                 </p>
                 <div id="outcomeChart" class="chart"></div>
             </div>
@@ -90,6 +90,9 @@
                     Analyzing scoring drives provides insight into how teams construct their successful offensive series. While passing plays often feature prominently in quick-scoring drives, especially when teams are trailing, rushing plays become increasingly important in longer drives that help control game tempo and wear down defensive units. This balance between explosive passing plays and methodical rushing attacks often defines a team's scoring identity.
                 </p>
                 <div id="scoringChart" class="chart"></div>
+                <p class="description">
+                    Always passing is bad as it's predictable and is likely to eventually lead to an interception. Always rushing is bad as it's not explosive enough to consistently gain enough yards. Therefore, a balance of around 45% passing and 55% rushing is best.
+                </p>
             </div>
         </section>
 

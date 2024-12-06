@@ -208,26 +208,26 @@ export class PlayOutcomeVis {
             .join('path')
             .attr('fill', d => {
                 if (d.depth === 0) return 'white';
-                if (d.depth === 1) return d.data.name === 'pass' ? this.colors.primary : this.colors.accent;
+                if (d.depth === 1) return d.data.name === 'Pass' ? this.colors.primary : this.colors.accent;
                 if (d.depth === 2) {
                     switch(d.data.name) {
-                        case 'success': return this.colors.success;
-                        case 'neutral': return this.colors.neutral;
-                        case 'failure': return this.colors.failure;
+                        case 'Success': return this.colors.success;
+                        case 'Neutral': return this.colors.neutral;
+                        case 'Failure': return this.colors.failure;
                         default: return '#ccc';
                     }
                 }
-                // Specific colors for outermost layer
+                // Leaf nodes (depth 3)
                 switch(d.data.name) {
-                    case 'touchdown': return this.colors.touchdown;
-                    case 'first down': return this.colors.firstDown;
-                    case 'positive yards': return this.colors.positiveYards;
-                    case 'no gain': return this.colors.noGain;
-                    case 'incomplete': return this.colors.incomplete;
-                    case 'interception': return this.colors.interception;
-                    case 'sack': return this.colors.sack;
-                    case 'loss yards': return this.colors.lossYards;
-                    case 'fumble': return this.colors.fumble;
+                    case 'Touchdown': return this.colors.touchdown;
+                    case 'First Down': return this.colors.firstDown;
+                    case 'Positive Yards': return this.colors.positiveYards;
+                    case 'No Gain': return this.colors.noGain;
+                    case 'Incomplete': return this.colors.incomplete;
+                    case 'Interception': return this.colors.interception;
+                    case 'Sack': return this.colors.sack;
+                    case 'Loss Yards': return this.colors.lossYards;
+                    case 'Fumble': return this.colors.fumble;
                     default: return '#ccc';
                 }
             })
@@ -291,6 +291,16 @@ export class PlayOutcomeVis {
             .style('font-size', '20px')
             .style('fill', this.colors.primary)
             .text('Play Outcomes Distribution');
+
+        // Add interaction hint
+        d3.select('#outcomeChart')
+            .append('div')
+            .attr('class', 'interaction-hint')
+            .style('text-align', 'center')
+            .style('color', '#666')
+            .style('font-size', '14px')
+            .style('margin-top', '10px')
+            .text('Click on segments to zoom in and explore details. Hover for more information.');
     }
 
     processData(data) {
@@ -319,24 +329,24 @@ export class PlayOutcomeVis {
         const passingPlays = data.filter(d => d.play_type === 'pass');
         console.log('Passing plays:', passingPlays.length);
         const passNode = {
-            name: 'pass',
+            name: 'Pass',
             children: []
         };
 
         // Success category for pass plays
         const passSuccess = {
-            name: 'success',
+            name: 'Success',
             children: [
                 {
-                    name: 'touchdown',
+                    name: 'Touchdown',
                     value: passingPlays.filter(d => d.touchdown === 1).length
                 },
                 {
-                    name: 'first down',
+                    name: 'First Down',
                     value: passingPlays.filter(d => d.first_down_pass === 1 && d.touchdown === 0).length
                 },
                 {
-                    name: 'positive yards',
+                    name: 'Positive Yards',
                     value: passingPlays.filter(d => 
                         d.yards_gained > 0 && 
                         d.first_down_pass === 0 && 
@@ -351,10 +361,10 @@ export class PlayOutcomeVis {
 
         // Neutral category for pass plays
         const passNeutral = {
-            name: 'neutral',
+            name: 'Neutral',
             children: [
                 {
-                    name: 'no gain',
+                    name: 'No Gain',
                     value: passingPlays.filter(d => 
                         d.yards_gained === 0 && 
                         d.incomplete_pass === 0 && 
@@ -363,7 +373,7 @@ export class PlayOutcomeVis {
                     ).length
                 },
                 {
-                    name: 'incomplete',
+                    name: 'Incomplete',
                     value: passingPlays.filter(d => d.incomplete_pass === 1).length
                 }
             ]
@@ -371,18 +381,18 @@ export class PlayOutcomeVis {
 
         // Failure category for pass plays
         const passFailure = {
-            name: 'failure',
+            name: 'Failure',
             children: [
                 {
-                    name: 'interception',
+                    name: 'Interception',
                     value: passingPlays.filter(d => d.interception === 1).length
                 },
                 {
-                    name: 'sack',
+                    name: 'Sack',
                     value: passingPlays.filter(d => d.sack === 1).length
                 },
                 {
-                    name: 'loss yards',
+                    name: 'Loss Yards',
                     value: passingPlays.filter(d => 
                         d.yards_gained < 0 && 
                         d.sack === 0 && 
@@ -396,20 +406,20 @@ export class PlayOutcomeVis {
         const runningPlays = data.filter(d => d.play_type === 'run');
         console.log('Running plays:', runningPlays.length);
         const runNode = {
-            name: 'run',
+            name: 'Run',
             children: []
         };
 
         // Success category for run plays
         const runSuccess = {
-            name: 'success',
+            name: 'Success',
             children: [
                 {
-                    name: 'touchdown',
+                    name: 'Touchdown',
                     value: runningPlays.filter(d => d.touchdown === 1).length
                 },
                 {
-                    name: 'first down',
+                    name: 'First Down',
                     value: runningPlays.filter(d => 
                         d.first_down_rush === 1 && 
                         d.touchdown === 0 && 
@@ -417,7 +427,7 @@ export class PlayOutcomeVis {
                     ).length
                 },
                 {
-                    name: 'positive yards',
+                    name: 'Positive Yards',
                     value: runningPlays.filter(d => 
                         d.yards_gained > 0 && 
                         d.first_down_rush === 0 && 
@@ -430,10 +440,10 @@ export class PlayOutcomeVis {
 
         // Neutral category for run plays
         const runNeutral = {
-            name: 'neutral',
+            name: 'Neutral',
             children: [
                 {
-                    name: 'no gain',
+                    name: 'No Gain',
                     value: runningPlays.filter(d => 
                         d.yards_gained === 0 && 
                         d.fumble === 0
@@ -444,14 +454,14 @@ export class PlayOutcomeVis {
 
         // Failure category for run plays
         const runFailure = {
-            name: 'failure',
+            name: 'Failure',
             children: [
                 {
-                    name: 'fumble',
+                    name: 'Fumble',
                     value: runningPlays.filter(d => d.fumble === 1).length
                 },
                 {
-                    name: 'loss yards',
+                    name: 'Loss Yards',
                     value: runningPlays.filter(d => 
                         d.yards_gained < 0 && 
                         d.fumble === 0

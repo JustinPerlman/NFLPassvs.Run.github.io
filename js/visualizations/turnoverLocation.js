@@ -249,9 +249,13 @@ export class TurnoverLocationVis {
         const maxRunRate = d3.max(Array.from(this.turnoverData.run.values(), d => d.rate));
         const maxRate = Math.max(maxPassRate, maxRunRate);
 
+        // Shift the color scale to have midpoint closer to red
         const colorScale = d3.scaleSequential()
             .domain([0, maxRate])
-            .interpolator(t => d3.interpolateRdYlGn(1 - t));
+            .interpolator(t => {
+                const shiftedT = Math.pow(t, 0.6); // Push colors towards red
+                return d3.interpolateRdYlGn(1 - shiftedT);
+            });
 
         this.updateField('pass', 0, colorScale);
         this.updateField('run', this.fieldHeight + 40, colorScale);
