@@ -116,6 +116,17 @@ export class GameContextVis {
             .attr('x', -height / 2)
             .attr('y', -40)
             .text('Play Type Percentage');
+
+        // Add 50% line for reference
+        this.fieldSvg.append('line')
+            .attr('class', 'fifty-percent-line')
+            .attr('x1', 0)
+            .attr('x2', this.xScale(100))
+            .attr('y1', this.yScale(0.5))
+            .attr('y2', this.yScale(0.5))
+            .attr('stroke', '#ccc')
+            .attr('stroke-width', 1)
+            .attr('stroke-dasharray', '4,2');
     }
 
     setupControls() {
